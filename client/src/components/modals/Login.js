@@ -8,6 +8,7 @@ const Login = (props) => {
 	const [input, setInput] = useState({ email: '', password: '' });
 	const [loading, toggleLoading] = useState(false);
 	const [showErr, displayErrorMsg] = useState(false);
+	const [isVisible, setVisible] = useState(true);
 	const errorMsg = "Email/Password not found.";
 	const [Login] = useMutation(LOGIN);
 
@@ -32,16 +33,19 @@ const Login = (props) => {
 			props.setShowLogin(false)
 		};
 	};
+	const handleKeyPress = (e) => {
+
+	}
 
 
 	return (
         // Replace div with WModal
 
-		<div className="login-modal">
-			<div className="modal-header" onClose={() => props.setShowLogin(false)}>
+		<WModal visible={isVisible} className="login-modal" onKeyPress={handleKeyPress}>
+			<WMHeader className="modal-header" onClose={() => props.setShowLogin(false)}>
 				Login
-			</div>
-
+			</WMHeader>
+			<WMMain>
 			{
 				loading ? <div />
 					: <div className="main-login-modal">
@@ -59,12 +63,13 @@ const Login = (props) => {
 
 					</div>
 			}
-			<div>
+			</WMMain>
+			<WMFooter>
 				<WButton className="modal-button" onClick={handleLogin} span clickAnimation="ripple-light" hoverAnimation="darken" shape="rounded" color="primary">
 					Login
 				</WButton>
-			</div>
-		</div>
+			</WMFooter>
+		</WModal>
 	);
 }
 

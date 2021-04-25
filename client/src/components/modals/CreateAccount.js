@@ -5,9 +5,10 @@ import { useMutation }    	from '@apollo/client';
 import { WModal, WMHeader, WMMain, WMFooter, WButton, WInput, WRow, WCol } from 'wt-frontend';
 
 const CreateAccount = (props) => {
-	const [input, setInput] = useState({ email: '', password: '', firstName: '', lastName: '' });
+	const [input, setInput] = useState({ email: '', password: '', name: '' });
 	const [loading, toggleLoading] = useState(false);
 	const [Register] = useMutation(REGISTER);
+	const [isVisible, setVisible] = useState(true);
 
 	
 	const updateInput = (e) => {
@@ -23,6 +24,7 @@ const CreateAccount = (props) => {
 				return;
 			}
 		}
+		console.log({...input});
 		const { loading, error, data } = await Register({ variables: { ...input } });
 		if (loading) { toggleLoading(true) };
 		if (error) { return `Error: ${error.message}` };
@@ -34,6 +36,7 @@ const CreateAccount = (props) => {
 			}
 			else {
 				props.fetchUser();
+				//changed from lastName and firstName to just name
 			}
 			props.setShowCreate(false);
 
@@ -43,28 +46,18 @@ const CreateAccount = (props) => {
 	return (
         // Replace div with WModal
 
-		<div className="signup-modal">
-			<div className="modal-header" onClose={() => props.setShowCreate(false)}>
+		<WModal visible={isVisible} className="signup-modal">
+			<WMHeader className="modal-header" onClose={() => props.setShowCreate(false)}>
 				Sign Up
-			</div>
-
+			</WMHeader>
+			<WMMain>
 			{
 				loading ? <div />
 					: <div>
-						<WRow className="modal-col-gap signup-modal">
-							<WCol size="6">
-								<WInput 
-									className="" onBlur={updateInput} name="firstName" labelAnimation="up" 
-									barAnimation="solid" labelText="First Name" wType="outlined" inputType="text" 
-								/>
-							</WCol>
-							<WCol size="6">
-								<WInput 
-									className="" onBlur={updateInput} name="lastName" labelAnimation="up" 
-									barAnimation="solid" labelText="Last Name" wType="outlined" inputType="text" 
-								/>
-							</WCol>
-						</WRow>
+							<WInput 
+							className="modal-input" onBlur={updateInput} name="name" labelAnimation="up" 
+							barAnimation="solid" labelText="Name" wType="outlined" inputType="text" 
+						/>
 
 						<div className="modal-spacer">&nbsp;</div>
 						<WInput 
@@ -78,10 +71,13 @@ const CreateAccount = (props) => {
 						/>
 					</div>
 			}
+			</WMMain>
+			<WMFooter>
 			<WButton className="modal-button" onClick={handleCreateAccount} span clickAnimation="ripple-light" hoverAnimation="darken" shape="rounded" color="primary">
 				Submit
 			</WButton>
-		</div>
+			</WMFooter>
+		</WModal>
 	);
 }
 

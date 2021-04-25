@@ -205,7 +205,7 @@ const Homescreen = (props) => {
 				</WNavbar>
 			</WLHeader>
 
-			<WLSide side="left">
+			{/* <WLSide side="left">
 				<WSidebar>
 					{
 						activeList ?
@@ -235,7 +235,7 @@ const Homescreen = (props) => {
 							<div className="container-secondary" />
 				}
 
-			</WLMain>
+			</WLMain> */}
 
 			{
 				showDelete && (<Delete deleteList={deleteList} activeid={activeList._id} setShowDelete={setShowDelete} />)
