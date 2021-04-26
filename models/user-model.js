@@ -2,7 +2,7 @@ const { model, Schema, ObjectId } = require('mongoose');
 
 const userSchema = new Schema(
 	{
-		id: {
+		_id: {
 			type: ObjectId,
 			required: true
 		},

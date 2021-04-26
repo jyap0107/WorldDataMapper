@@ -11,9 +11,19 @@ module.exports = {
 		**/
 		getCurrentUser: async (_, __, { req }) => {
 			const _id = new ObjectId(req.userId);
-			if(!_id) { return({}) }
-			const found = await User.findOne(_id);
-			if(found) return found;
+			console.log(_id);
+			if(!_id) {
+				console.log("no ID");
+				return({})
+			}
+			const found = await User.findById(_id);
+			console.log("found: ");
+			console.log(found);
+			if(found) {
+				console.log("We");
+				console.log(found);
+				return found;
+			}
 		},
 	},
 	Mutation: {
@@ -48,7 +58,7 @@ module.exports = {
 			if(alreadyRegistered) {
 				console.log('User with that email already registered.');
 				return(new User({
-					id: '',
+					_id: '',
 					name: '',
 					email: 'already exists', 
 					password: ''}));
@@ -56,7 +66,7 @@ module.exports = {
 			const hashed = await bcrypt.hash(password, 10);
 			const _id = new ObjectId();
 			const user = new User({
-				id: _id,
+				_id: _id,
 				name: name,
 				email: email, 
 				password: hashed,

@@ -19,6 +19,7 @@ const Login = (props) => {
 	}
 
 	const handleLogin = async (e) => {
+		console.log("Logging in!")
 
 		const { loading, error, data } = await Login({ variables: { ...input } });
 		if (loading) { toggleLoading(true) };
@@ -28,9 +29,10 @@ const Login = (props) => {
 		}
 		if (data) {
 			props.fetchUser();
-			props.refetchTodos();
+			// props.refetchTodos();
 			toggleLoading(false)
 			props.setShowLogin(false)
+			console.log("NO error, logged in!");
 		};
 	};
 	const handleKeyPress = (e) => {
@@ -41,7 +43,7 @@ const Login = (props) => {
 	return (
         // Replace div with WModal
 
-		<WModal visible={isVisible} className="login-modal" onKeyPress={handleKeyPress}>
+		<WMMain visible={isVisible} className="login-modal" onKeyPress={handleKeyPress}>
 			<WMHeader className="modal-header" onClose={() => props.setShowLogin(false)}>
 				Login
 			</WMHeader>
@@ -69,7 +71,7 @@ const Login = (props) => {
 					Login
 				</WButton>
 			</WMFooter>
-		</WModal>
+		</WMMain>
 	);
 }
 
