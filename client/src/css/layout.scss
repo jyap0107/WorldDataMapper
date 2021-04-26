@@ -124,15 +124,19 @@ html {
 }
 
 .modal-input {
-    width: 100%;
+    width: 90%;
+    margin-left:5%;
 }
 
 .login-modal {
     width: 350px;
 }
 
-.signup-modal {
+.signup-screen {
     width: 375px;
+    height: 110%;
+    margin-left: 27%;
+    margin-top: 5%;
 }
 
 .modal-col-gap{
@@ -190,4 +194,27 @@ html {
     padding-left: 0px !important;
     padding-right: 0px !important;
     //font-size: 1.125rem;
+}
+.account-header {
+    justify-content: center;
+    text-align: center;
+    text-transform: uppercase;
+    font-weight: bold;
+    letter-spacing: 1px;
+    padding-top: 10px;
+    font-size: x-large;
+    background-color: rgb(173, 53, 53);
+    color:white;
+
+}
+.login-screen {
+    margin-left:27%;
+    margin-top: 5%;
+    height: 90%;
+}
+.account-main {
+    background-color: black;
+}
+.account-footer {
+    background-color: black;
 }

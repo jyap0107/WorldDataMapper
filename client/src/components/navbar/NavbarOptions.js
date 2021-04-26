@@ -41,9 +41,9 @@ const LoggedOut = (props) => {
                 </Link>
             </WNavItem>
             <WNavItem hoverAnimation="lighten">
-                <WButton className="navbar-options" onClick={props.setShowCreate} wType="texted" hoverAnimation="text-primary"> 
+                <Link className="navbar-options" to="/CreateAccount" wType="texted" hoverAnimation="text-primary"> 
                     Sign Up 
-                </WButton>
+                </Link>
             </WNavItem>
         </>
     );

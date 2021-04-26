@@ -1,14 +1,15 @@
 import React, { useState } 	from 'react';
 import { LOGIN } 			from '../../cache/mutations';
 import { useMutation }    	from '@apollo/client';
+import { Link } from 'react-router-dom';
 
-import { WModal, WMHeader, WMMain, WMFooter, WButton, WInput } from 'wt-frontend';
+import { WGrid, WCol, WLHeader, WLFooter, WLMain, WCard, WModal, WMHeader, WMMain, WMFooter, WButton, WInput, WLayout } from 'wt-frontend';
+import WLSide from 'wt-frontend/build/components/wlayout/WLSide';
 
 const Login = (props) => {
 	const [input, setInput] = useState({ email: '', password: '' });
 	const [loading, toggleLoading] = useState(false);
 	const [showErr, displayErrorMsg] = useState(false);
-	const [isVisible, setVisible] = useState(true);
 	const errorMsg = "Email/Password not found.";
 	const [Login] = useMutation(LOGIN);
 
@@ -31,28 +32,23 @@ const Login = (props) => {
 			props.fetchUser();
 			// props.refetchTodos();
 			toggleLoading(false)
-			props.setShowLogin(false)
+			// props.setShowLogin(false)
 			console.log("NO error, logged in!");
 		};
 	};
-	const handleKeyPress = (e) => {
-
-	}
-
 
 	return (
         // Replace div with WModal
 
-		<WMMain visible={isVisible} className="login-modal" onKeyPress={handleKeyPress}>
-			<WMHeader className="modal-header" onClose={() => props.setShowLogin(false)}>
-				Login
-			</WMHeader>
-			<WMMain>
+		<WCard className="login-screen">
+			<WLayout wLayout="header-footer">
+				<WLHeader className="account-header">Login to your Account</WLHeader>
+				<WLMain className="account-main">
 			{
 				loading ? <div />
 					: <div className="main-login-modal">
 
-						<WInput className="modal-input" onBlur={updateInput} name='email' labelAnimation="up" barAnimation="solid" labelText="Email Address" wType="outlined" inputType='text' />
+						<WInput className="modal-input" onBlur={updateInput} name='email' labelAnimation="up" barAnimation="solid" labelText="Email Address" wType="outlined" inputType='text'/>
 						<div className="modal-spacer">&nbsp;</div>
 						<WInput className="modal-input" onBlur={updateInput} name='password' labelAnimation="up" barAnimation="solid" labelText="Password" wType="outlined" inputType='password' />
 
@@ -65,13 +61,31 @@ const Login = (props) => {
 
 					</div>
 			}
-			</WMMain>
-			<WMFooter>
+			</WLMain>
+			<WMFooter className='account-footer'>
+				<Link to="/maps">
+					<WButton className="modal-button" onClick={handleLogin} span clickAnimation="ripple-light" hoverAnimation="darken" shape="rounded" color="primary">
+						Login
+					</WButton>
+				</Link>
+{/* 
 				<WButton className="modal-button" onClick={handleLogin} span clickAnimation="ripple-light" hoverAnimation="darken" shape="rounded" color="primary">
 					Login
-				</WButton>
+				</WButton> */}
+
 			</WMFooter>
-		</WMMain>
+			</WLayout>
+		</WCard>
+	// 	<WCard style={{height: "450px", width: "600px" }} raised>
+    //     <WLayout wLayout="header-footer" className="example-layout-labels">
+    //       <WLHeader style={{ backgroundColor: "salmon"}}>Header<label>w x 56</label></WLHeader>
+    //       <WLMain style={{ backgroundColor: "ivory"}}>Main<label>w x h</label></WLMain>
+    //       <WLFooter style={{ backgroundColor: "aquamarine"}}>Footer<label>w x h</label></WLFooter>
+    //     </WLayout>
+    //   </WCard>
+		
+		
+		
 	);
 }
 

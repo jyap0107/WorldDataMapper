@@ -2,7 +2,7 @@ import React, { useState } 	from 'react';
 import { REGISTER }			from '../../cache/mutations';
 import { useMutation }    	from '@apollo/client';
 
-import { WModal, WMHeader, WMMain, WMFooter, WButton, WInput, WRow, WCol } from 'wt-frontend';
+import { WLHeader, WLFooter, WLMain, WCard, WModal, WMHeader, WMMain, WMFooter, WButton, WInput, WLayout } from 'wt-frontend';
 
 const CreateAccount = (props) => {
 	const [input, setInput] = useState({ email: '', password: '', name: '' });
@@ -38,7 +38,6 @@ const CreateAccount = (props) => {
 				props.fetchUser();
 				//changed from lastName and firstName to just name
 			}
-			props.setShowCreate(false);
 
 		};
 	};
@@ -46,14 +45,15 @@ const CreateAccount = (props) => {
 	return (
         // Replace div with WModal
 
-		<WModal visible={isVisible} className="signup-modal">
-			<WMHeader className="modal-header" onClose={() => props.setShowCreate(false)}>
-				Sign Up
-			</WMHeader>
-			<WMMain>
+		<WCard className="signup-screen">
+			<WLayout wLayout="header-footer">
+				<WLHeader className="account-header">Sign Up</WLHeader>
+				<WLMain className="account-main">
 			{
 				loading ? <div />
-					: <div>
+					: 
+					<div>
+						<div className="modal-spacer">&nbsp;</div>
 							<WInput 
 							className="modal-input" onBlur={updateInput} name="name" labelAnimation="up" 
 							barAnimation="solid" labelText="Name" wType="outlined" inputType="text" 
@@ -69,15 +69,17 @@ const CreateAccount = (props) => {
 							className="modal-input" onBlur={updateInput} name="password" labelAnimation="up" 
 							barAnimation="solid" labelText="Password" wType="outlined" inputType="password" 
 						/>
+						<div className="modal-spacer">&nbsp;</div>
 					</div>
 			}
-			</WMMain>
-			<WMFooter>
+				</WLMain>
+			<WMFooter className='account-footer'>
 			<WButton className="modal-button" onClick={handleCreateAccount} span clickAnimation="ripple-light" hoverAnimation="darken" shape="rounded" color="primary">
 				Submit
 			</WButton>
 			</WMFooter>
-		</WModal>
+			</WLayout>
+		</WCard>
 	);
 }
 

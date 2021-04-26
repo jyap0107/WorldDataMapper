@@ -170,23 +170,23 @@ const Homescreen = (props) => {
 		were more it would probably make sense to make a general modal component, and
 		a modal manager that handles which to show.
 	*/
-	const setShowLogin = () => {
-		toggleShowDelete(false);
-		toggleShowCreate(false);
-		toggleShowLogin(!showLogin);
-	};
+	// const setShowLogin = () => {
+	// 	toggleShowDelete(false);
+	// 	toggleShowCreate(false);
+	// 	toggleShowLogin(!showLogin);
+	// };
 
-	const setShowCreate = () => {
-		toggleShowDelete(false);
-		toggleShowLogin(false);
-		toggleShowCreate(!showCreate);
-	};
+	// const setShowCreate = () => {
+	// 	toggleShowDelete(false);
+	// 	toggleShowLogin(false);
+	// 	toggleShowCreate(!showCreate);
+	// };
 
-	const setShowDelete = () => {
-		toggleShowCreate(false);
-		toggleShowLogin(false);
-		toggleShowDelete(!showDelete)
-	}
+	// const setShowDelete = () => {
+	// 	toggleShowCreate(false);
+	// 	toggleShowLogin(false);
+	// 	toggleShowDelete(!showDelete)
+	// }
 
 	return (
 
@@ -203,21 +203,31 @@ const Homescreen = (props) => {
 						<NavbarOptions
 							fetchUser={props.fetchUser} auth={auth}
 							user={props.user} 
-							setShowCreate={setShowCreate} setShowLogin={setShowLogin}
-							// refetchTodos={refetch} setActiveList={setActiveList}
 						/>
 					</ul>
 				</WNavbar>
 			</WLHeader>
 			<WLMain>
-					<div className="screen">
-						<Switch>
-							<Route path="/login" render={() => <Login fetchUser={props.fetchUser}
-					setShowLogin={setShowLogin}/>}/>
-							<Route path="/CreateAccount" component={CreateAccount}/>
-						</Switch>
+				<div className="screen">
+					<Switch>
+						{!auth && <Route path="/login" render={
+							() => <Login
+								fetchUser={props.fetchUser}/>
+								}
+							/>}
+						{!auth && <Route path="/CreateAccount" render={
+							() => <CreateAccount
+								fetchUser={props.fetchUser}/>
+								}
+							/>}
+						{auth && <Route path="/maps" render= {
+							() => <Maps
+								fetchUser={props.fetchUser}/>
+								}
+							/>}
+					</Switch>
 
-					</div>
+				</div>
 
 
 			</WLMain>
@@ -258,16 +268,6 @@ const Homescreen = (props) => {
 			{/* {
 				showDelete && (<Delete deleteList={deleteList} activeid={activeList._id} setShowDelete={setShowDelete} />)
 			} */}
-
-			{
-				showCreate && (<CreateAccount fetchUser={props.fetchUser} setShowCreate={setShowCreate} />)
-			}
-
-			{
-				showLogin && (<Login fetchUser={props.fetchUser}
-					// refetchTodos={refetch}
-					setShowLogin={setShowLogin} />)
-			}
 
 		</WLayout>
 	);
