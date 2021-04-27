@@ -1,16 +1,17 @@
 import React, { useState } 	from 'react';
 import { REGISTER }			from '../../cache/mutations';
 import { useMutation }    	from '@apollo/client';
+import { Link,useHistory }				from 'react-router-dom'
 
 import { WLHeader, WLFooter, WLMain, WCard, WModal, WMHeader, WMMain, WMFooter, WButton, WInput, WLayout } from 'wt-frontend';
 
 const CreateAccount = (props) => {
+	let history = useHistory();
 	const [input, setInput] = useState({ email: '', password: '', name: '' });
 	const [loading, toggleLoading] = useState(false);
 	const [Register] = useMutation(REGISTER);
 	const [isVisible, setVisible] = useState(true);
 
-	
 	const updateInput = (e) => {
 		const { name, value } = e.target;
 		const updated = { ...input, [name]: value };
@@ -19,6 +20,7 @@ const CreateAccount = (props) => {
 
 	const handleCreateAccount = async (e) => {
 		for (let field in input) {
+			console.log(field);
 			if (!input[field]) {
 				alert('All fields must be filled out to register');
 				return;
@@ -30,11 +32,14 @@ const CreateAccount = (props) => {
 		if (error) { return `Error: ${error.message}` };
 		if (data) {
 			console.log(data)
+			console.log(data.register);
 			toggleLoading(false);
 			if(data.register.email === 'already exists') {
 				alert('User with that email already registered');
+				history.push("/createAccount")
 			}
 			else {
+				history.push("/maps");
 				props.fetchUser();
 				//changed from lastName and firstName to just name
 			}
@@ -74,9 +79,16 @@ const CreateAccount = (props) => {
 			}
 				</WLMain>
 			<WMFooter className='account-footer'>
-			<WButton className="modal-button" onClick={handleCreateAccount} span clickAnimation="ripple-light" hoverAnimation="darken" shape="rounded" color="primary">
-				Submit
-			</WButton>
+			<div className="account-buttons">
+				<WButton className="modal-button" onClick={handleCreateAccount} clickAnimation="ripple-light" hoverAnimation="darken" shape="rounded" color="primary">
+					Sign Up
+				</WButton>
+				<Link to="/">
+					<WButton className="modal-button" clickAnimation="ripple-light" hoverAnimation="darken" shape="rounded" color="primary">
+						Cancel
+					</WButton>
+				</Link>
+			</div>
 			</WMFooter>
 			</WLayout>
 		</WCard>

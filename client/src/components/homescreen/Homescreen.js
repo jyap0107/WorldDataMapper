@@ -4,14 +4,16 @@ import NavbarOptions 					from '../navbar/NavbarOptions';
 import MainContents 					from '../main/MainContents';
 import SidebarContents 					from '../sidebar/SidebarContents';
 import Login 							from '../modals/Login';
+import Maps								from '../main/Maps';
 import Delete 							from '../modals/Delete';
 import CreateAccount 					from '../modals/CreateAccount';
+import UpdateAccount					from '../modals/UpdateAccount';
 import { GET_DB_TODOS } 				from '../../cache/queries';
 import * as mutations 					from '../../cache/mutations';
 import { useMutation, useQuery } 		from '@apollo/client';
 import { WNavbar, WSidebar, WNavItem } 	from 'wt-frontend';
 import { WLayout, WLHeader, WLMain, WLSide } from 'wt-frontend';
-import { BrowserRouter as Router, Switch, Route, Redirect, Link } from 'react-router-dom';
+import { BrowserRouter as Router, HashRouter, Switch, Route, Redirect, Link } from 'react-router-dom';
 import { UpdateListField_Transaction, 
 	UpdateListItems_Transaction, 
 	ReorderItems_Transaction, 
@@ -215,10 +217,15 @@ const Homescreen = (props) => {
 								fetchUser={props.fetchUser}/>
 								}
 							/>}
-						{!auth && <Route path="/CreateAccount" render={
+						{!auth && <Route path="/createAccount" render={
 							() => <CreateAccount
-								fetchUser={props.fetchUser}/>
+								fetchUser={props.fetchUser}
+								user={props.user}/>
 								}
+							/>}
+						{auth && <Route path="/updateAccount" render={
+							() => <UpdateAccount
+								user={props.user}/>}
 							/>}
 						{auth && <Route path="/maps" render= {
 							() => <Maps

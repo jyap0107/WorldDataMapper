@@ -63,11 +63,18 @@ const Login = (props) => {
 			}
 			</WLMain>
 			<WMFooter className='account-footer'>
-				<Link to="/maps">
-					<WButton className="modal-button" onClick={handleLogin} span clickAnimation="ripple-light" hoverAnimation="darken" shape="rounded" color="primary">
-						Login
-					</WButton>
-				</Link>
+				<div className='account-buttons'>
+					<Link to="/maps">
+						<WButton className="modal-button" onClick={handleLogin} span clickAnimation="ripple-light" hoverAnimation="darken" shape="rounded" color="primary">
+							Login
+						</WButton>
+					</Link>
+					<Link to="/">
+						<WButton className="modal-button" clickAnimation="ripple-light" hoverAnimation="darken" shape="rounded" color="primary">
+							Cancel
+						</WButton>
+					</Link>
+				</div>
 {/* 
 				<WButton className="modal-button" onClick={handleLogin} span clickAnimation="ripple-light" hoverAnimation="darken" shape="rounded" color="primary">
 					Login

@@ -138,7 +138,10 @@ html {
     margin-left: 27%;
     margin-top: 5%;
 }
-
+label {
+    color: white;
+    vertical-align: auto;
+}
 .modal-col-gap{
     column-gap: 24px;
 }
@@ -147,6 +150,8 @@ html {
     text-transform: uppercase;
     font-weight: bold;
     letter-spacing: 1px;
+    padding-right: 40px;
+    padding-left: 40px;
 }
 
 .modal-spacer {
@@ -189,7 +194,7 @@ html {
     display: flex;
     align-items: center;
 }
-
+//#region Spacing
 .table-input-class {
     padding-left: 0px !important;
     padding-right: 0px !important;
@@ -207,14 +212,20 @@ html {
     color:white;
 
 }
+//#endregion
 .login-screen {
     margin-left:27%;
     margin-top: 5%;
     height: 90%;
 }
+.account-buttons {
+    display: flex;
+    flex-direction: row;
+    justify-content: space-evenly;
+}
 .account-main {
-    background-color: black;
+    background-color: rgb(32, 32, 32);
 }
 .account-footer {
-    background-color: black;
+    background-color: rgb(32, 32, 32);
 }
