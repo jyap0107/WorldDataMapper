@@ -3,11 +3,12 @@ import Logo 							from '../navbar/Logo';
 import NavbarOptions 					from '../navbar/NavbarOptions';
 import MainContents 					from '../main/MainContents';
 import SidebarContents 					from '../sidebar/SidebarContents';
-import Login 							from '../modals/Login';
+import Login 							from '../screens/Login';
 import Maps								from '../main/Maps';
-import Delete 							from '../modals/Delete';
-import CreateAccount 					from '../modals/CreateAccount';
-import UpdateAccount					from '../modals/UpdateAccount';
+import Delete 							from '../screens/Delete';
+import CreateAccount 					from '../screens/CreateAccount';
+import UpdateAccount					from '../screens/UpdateAccount';
+import { GET_MAPS }						from '../../cache/queries';
 import { GET_DB_TODOS } 				from '../../cache/queries';
 import * as mutations 					from '../../cache/mutations';
 import { useMutation, useQuery } 		from '@apollo/client';
@@ -45,6 +46,12 @@ const Homescreen = (props) => {
 	const auth = props.user === null ? false : true;
 	console.log("Auth?");
 	console.log(auth);
+
+	let maps = [];
+	const { loading, error, data, refetch } = useQuery(GET_MAPS);
+	if (loading) { console.log(loading, 'loading');}
+	if (error) { console.log(error, 'error');}
+	if (data) { maps = data.getAllMaps;}
 
 	// const refetchTodos = async (refetch) => {
 	// 	const { loading, error, data } = await refetch();
@@ -225,11 +232,13 @@ const Homescreen = (props) => {
 							/>}
 						{auth && <Route path="/updateAccount" render={
 							() => <UpdateAccount
+							fetchUser={props.fetchUser}
 								user={props.user}/>}
 							/>}
 						{auth && <Route path="/maps" render= {
 							() => <Maps
-								fetchUser={props.fetchUser}/>
+								fetchUser={props.fetchUser}
+								user={props.user}/>
 								}
 							/>}
 					</Switch>

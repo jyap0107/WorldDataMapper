@@ -1,14 +1,15 @@
 import React, { useState } 	from 'react';
-import { REGISTER }			from '../../cache/mutations';
+import { UPDATE_ACCOUNT }			from '../../cache/mutations';
 import { useMutation }    	from '@apollo/client';
-import { Link }				from 'react-router-dom';
+import { useHistory, Link }				from 'react-router-dom';
 
 import { WLHeader, WLFooter, WLMain, WCard, WModal, WMHeader, WMMain, WMFooter, WButton, WInput, WLayout } from 'wt-frontend';
 
 const UpdateAccount = (props) => {
+	let history = useHistory();
 	const [input, setInput] = useState({ email: '', password: '', name: '' });
 	const [loading, toggleLoading] = useState(false);
-	const [Register] = useMutation(REGISTER);   
+	const [UpdateAccount] = useMutation(UPDATE_ACCOUNT);   
 
 	
 	const updateInput = (e) => {
@@ -26,19 +27,22 @@ const UpdateAccount = (props) => {
 		}
 		if (allEmpty) {
 			alert("Must fill out at least one field to update.");
+			history.push("/updateAccount")
 			return;
 		}
 		console.log({...input});
-		const { loading, error, data } = await Register({ variables: { ...input } });
+		const { loading, error, data } = await UpdateAccount({ variables: { ...input } });
 		if (loading) { toggleLoading(true) };
 		if (error) { return `Error: ${error.message}` };
 		if (data) {
 			console.log(data)
 			toggleLoading(false);
-			if(data.register.email === 'already exists') {
+			if(data.updateAccount.email === 'already exists') {
 				alert('User with that email already registered');
+				history.push("/updateAccount");
 			}
 			else {
+				history.push("/maps");
 				props.fetchUser();
 				//changed from lastName and firstName to just name
 			}
@@ -86,11 +90,9 @@ const UpdateAccount = (props) => {
 				</WLMain>
 			<WMFooter className='account-footer'>
                 <div className="account-buttons">
-					<Link to="/maps">
-						<WButton className="modal-button" onClick={handleUpdateAccount} clickAnimation="ripple-light" hoverAnimation="darken" shape="rounded" color="primary">
-							Update
-						</WButton>
-					</Link>
+					<WButton className="modal-button" onClick={handleUpdateAccount} clickAnimation="ripple-light" hoverAnimation="darken" shape="rounded" color="primary">
+						Update
+					</WButton>
 					<Link to="/maps">
 						<WButton className="modal-button" clickAnimation="ripple-light" hoverAnimation="darken" shape="rounded" color="primary">
 							cancel

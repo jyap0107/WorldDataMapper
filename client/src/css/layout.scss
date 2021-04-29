@@ -153,6 +153,24 @@ label {
     padding-right: 40px;
     padding-left: 40px;
 }
+.maps-container {
+    margin-top: 25px;
+    margin-left: 130px;
+    height: 600px;
+    width: 800px;
+}
+.maps-header {
+    background-color: rgb(173, 53, 53);
+    text-align: center;
+    padding-bottom: 20px;
+    font-family: "Helvetica";
+    font-weight: bold;
+}
+.maps-header-text {
+    padding: 10px 0px;
+    font-size: xx-large;
+    color: white;
+}
 
 .modal-spacer {
     height: 24px;

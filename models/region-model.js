@@ -1,8 +1,12 @@
 const { model, Schema, ObjectId } = require('mongoose');
 const regionSchema = new Schema(
 	{
-		id: {
+		_id: {
 			type: ObjectId,
+			required: true
+		},
+		userID: {
+			type: String,
 			required: true
 		},
 		name: {
@@ -14,13 +18,11 @@ const regionSchema = new Schema(
 		},
 		capital: {
 			type: String,
-			required: true
 		},
 		leader: {
 			type: String,
-			required: true
 		},
-		numSubRegions: {
+		numSubregions: {
 			type: Number,
 			required: true
 		},
@@ -29,9 +31,7 @@ const regionSchema = new Schema(
 		},
 		flag: {
 			type: String,
-			required: true
 		}
-		
 	},
 	{ timestamps: true }
 );

@@ -23,6 +23,7 @@ const CreateAccount = (props) => {
 			console.log(field);
 			if (!input[field]) {
 				alert('All fields must be filled out to register');
+				history.push("/createAccount");
 				return;
 			}
 		}

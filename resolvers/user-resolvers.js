@@ -11,17 +11,11 @@ module.exports = {
 		**/
 		getCurrentUser: async (_, __, { req }) => {
 			const _id = new ObjectId(req.userId);
-			console.log(_id);
 			if(!_id) {
-				console.log("no ID");
 				return({})
 			}
 			const found = await User.findById(_id);
-			console.log("found: ");
-			console.log(found);
 			if(found) {
-				console.log("We");
-				console.log(found);
 				return found;
 			}
 		},
@@ -80,6 +74,35 @@ module.exports = {
 			res.cookie('access-token', accessToken, { httpOnly: true , sameSite: 'None', secure: true}); 
 			return user;
 		},
+		updateAccount: async (_, args, { req, res }) => {
+			const { email, password, name} = args;
+			const _id = new ObjectId(req.userId);
+			if(!_id) {
+				return({});
+			}
+			const currentUser = await User.findById(_id);
+			const alreadyRegistered = await User.findOne({email: email});
+			// If already registed but you ARE the current user, it's OK. If you ARENT then we got a situation.
+			if (alreadyRegistered && !(currentUser.email == email)) {
+				return(new User({
+					_id: '',
+					name: '',
+					email: 'already exists', 
+					password: ''}));
+				}
+			if (email != "") {
+				let user = await User.updateOne({email: email});
+			}
+			if (password != "") {
+				const hashed = await bcrypt.hash(password, 10);
+				let user = await User.updateOne({password: hashed});
+			}
+			if (name != "") {
+				let user = await User.updateOne({name: name});
+			}
+			return ({});
+			},
+			
 		/** 
 			@param 	 {object} res - response object containing the current access/refresh tokens  
 			@returns {boolean} true 

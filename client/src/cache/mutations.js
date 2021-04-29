@@ -19,6 +19,14 @@ export const REGISTER = gql`
 		}
 	}
 `;
+export const UPDATE_ACCOUNT = gql`
+	mutation UpdateAccount($email: String!, $password: String!, $name: String!) {
+		updateAccount(email: $email, password: $password, name: $name) {
+			email
+			password
+		}
+	}
+`;
 export const LOGOUT = gql`
 	mutation Logout {
 		logout 
@@ -85,5 +93,11 @@ export const DELETE_TODOLIST = gql`
 export const UPDATE_TODOLIST_FIELD = gql`
 	mutation UpdateTodolistField($_id: String!, $field: String!, $value: String!) {
 		updateTodolistField(_id: $_id, field: $field, value: $value)
+	}
+`;
+
+export const ADD_MAP = gql`
+	mutation addMap($map: RegionInput!) {
+		addMap(map: $map)
 	}
 `;

@@ -28,3 +28,19 @@ export const GET_DB_TODOS = gql`
 		}
 	}
 `;
+export const GET_MAPS = gql`
+	query GetMaps {
+		getAllMaps {
+			_id
+			userID
+			name
+			parentRegion {
+				_id
+			}
+			capital
+			leader
+			numSubregions
+			landmarks
+		}
+	}
+`;
