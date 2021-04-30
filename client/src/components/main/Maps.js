@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { useMutation, useQuery } from '@apollo/client';
 import MapEntry from './MapEntry';
+import DeleteMap						from '../modals/DeleteMap.js';
 import * as mutations 					from '../../cache/mutations';
 import { WLHeader, WCContent, WLFooter, WLMain, WCard, WModal, WMHeader, WMMain, WMFooter, WButton, WInput, WLayout } from 'wt-frontend';
 import WCFooter from 'wt-frontend/build/components/wcard/WCFooter';
@@ -10,8 +11,12 @@ const Maps = (props) => {
     const [recentMap, setRecentMap] = useState({});
     const [input, setInput] = useState("");
     const [target, setTarget] = useState({});
+    const [showDeleteModal, setDeleteModal] = useState(false);
+    const [deleteMapId, setDeleteMapId] = useState("");
     
     const [AddMap] = useMutation(mutations.ADD_MAP);
+    const [DeleteMapMutation] = useMutation(mutations.DELETE_MAP);
+    const [EditRegionField] = useMutation(mutations.EDIT_REGION_FIELD);
 
     const updateInput = async (event) => {
         const value = event.target.value;
@@ -39,8 +44,19 @@ const Maps = (props) => {
         }
 
     }
-    const printIt = () => {
-        console.log(props.maps);
+    const setShowDeleteModal = () => {
+		setDeleteModal(!showDeleteModal);
+	}
+    const deleteMap = async () => {
+        console.log(deleteMapId);
+        const { data } = await DeleteMapMutation({variables: {map_id: deleteMapId}});
+        await props.refetchMaps();
+
+    }
+    const editField = async (regionId, field, name) => {
+        console.log("YEAHHHHHHHHHHH");
+        const { data } = await EditRegionField({variables: {region_id: regionId, field: field, value: name}})
+        await props.refetchMaps();
     }
     return (
         <div>
@@ -55,7 +71,10 @@ const Maps = (props) => {
                                     <MapEntry
                                         map={entry}
                                         key={entry._id}
-                                        setDeleteModal={props.setDeleteModal}
+                                        setShowDeleteModal={setShowDeleteModal}
+                                        deleteMap={deleteMap}
+                                        setDeleteMapId={setDeleteMapId}
+                                        editField={editField}
                                     />
                                 ))
                             }
@@ -72,7 +91,9 @@ const Maps = (props) => {
                     </WCContent>
                 </WLayout>
             </WCard>
-
+			{
+			showDeleteModal && (<DeleteMap showDeleteModal={showDeleteModal} setShowDeleteModal={setShowDeleteModal} deleteMap={deleteMap}/>)
+        }
         </div>
     );
 };

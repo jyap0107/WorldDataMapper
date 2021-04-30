@@ -101,8 +101,13 @@ export const ADD_MAP = gql`
 		addMap(map: $map)
 	}
 `;
-// export const DELETE_MAP = gql`
-// 	mutation deleteMap($map_id: String!) {
-// 		deleteMap(map_id: $map_id)
-// 	}
-// `;
+export const DELETE_MAP = gql`
+	mutation DeleteMap($map_id: String!) {
+		deleteMap(map_id: $map_id)
+	}
+`;
+export const EDIT_REGION_FIELD = gql`
+	mutation EditRegionField($region_id: String!, $field: String!, $value: String!) {
+		editRegionField(region_id: $region_id, field: $field, value: $value)
+	}
+`;

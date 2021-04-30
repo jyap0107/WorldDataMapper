@@ -3,7 +3,7 @@ import Logo 							from '../navbar/Logo';
 import NavbarOptions 					from '../navbar/NavbarOptions';
 import Login 							from '../screens/Login';
 import Maps								from '../main/Maps';
-import DeleteMap						from '../modals/DeleteMap';
+import DeleteMap						from '../modals/DeleteMap.js';
 import CreateAccount 					from '../screens/CreateAccount';
 import UpdateAccount					from '../screens/UpdateAccount';
 import { GET_MAPS }						from '../../cache/queries';
@@ -12,13 +12,7 @@ import { useMutation, useQuery } 		from '@apollo/client';
 import { WNavbar, WSidebar, WNavItem } 	from 'wt-frontend';
 import { WLayout, WLHeader, WLMain, WLSide } from 'wt-frontend';
 import { BrowserRouter as Router, HashRouter, Switch, Route, Redirect, Link } from 'react-router-dom';
-import { UpdateListField_Transaction, 
-	UpdateListItems_Transaction, 
-	ReorderItems_Transaction, 
-	EditItem_Transaction } 				from '../../utils/jsTPS';
-import WInput from 'wt-frontend/build/components/winput/WInput';
-
-
+	
 const Homescreen = (props) => {
 	
 	const [showDeleteModal, setDeleteModal] = useState(false);
@@ -50,6 +44,10 @@ const Homescreen = (props) => {
 	if (loading) { console.log(loading, 'loading');}
 	if (error) { console.log(error, 'error');}
 	if (data) { maps = data.getAllMaps;}
+
+	const setShowDeleteModal = () => {
+		setDeleteModal(!showDeleteModal);
+	}
 
 	//#region old code
 	// const refetchTodos = async (refetch) => {
@@ -240,7 +238,7 @@ const Homescreen = (props) => {
 								user={props.user}
 								maps={maps}
 								refetchMaps={refetch}
-								setDeleteModal={setDeleteModal}/>
+								setShowDeleteModal={setShowDeleteModal}/>
 								}
 							/>}
 					</Switch>
@@ -250,9 +248,9 @@ const Homescreen = (props) => {
 
 			</WLMain>
 			</Router>
-			{
-            showDeleteModal && (<DeleteMap />)
-        }
+			{/* {
+			showDeleteModal && (<DeleteMap showDeleteModal={showDeleteModal} setShowDeleteModal={setShowDeleteModal}/>)
+        } */}
 			{/* <WLSide side="left">
 				<WSidebar>
 					{
