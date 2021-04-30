@@ -1,15 +1,12 @@
 import React, { useState, useEffect } 	from 'react';
 import Logo 							from '../navbar/Logo';
 import NavbarOptions 					from '../navbar/NavbarOptions';
-import MainContents 					from '../main/MainContents';
-import SidebarContents 					from '../sidebar/SidebarContents';
 import Login 							from '../screens/Login';
 import Maps								from '../main/Maps';
-import Delete 							from '../screens/Delete';
+import DeleteMap						from '../modals/DeleteMap';
 import CreateAccount 					from '../screens/CreateAccount';
 import UpdateAccount					from '../screens/UpdateAccount';
 import { GET_MAPS }						from '../../cache/queries';
-import { GET_DB_TODOS } 				from '../../cache/queries';
 import * as mutations 					from '../../cache/mutations';
 import { useMutation, useQuery } 		from '@apollo/client';
 import { WNavbar, WSidebar, WNavItem } 	from 'wt-frontend';
@@ -23,7 +20,10 @@ import WInput from 'wt-frontend/build/components/winput/WInput';
 
 
 const Homescreen = (props) => {
+	
+	const [showDeleteModal, setDeleteModal] = useState(false);
 
+	//#region Hooks
 	const [activeList, setActiveList] 		= useState({});
 	const [showDelete, toggleShowDelete] 	= useState(false);
 	const [showLogin, toggleShowLogin] 		= useState(false);
@@ -37,15 +37,13 @@ const Homescreen = (props) => {
 	const [AddTodolist] 			= useMutation(mutations.ADD_TODOLIST);
 	const [AddTodoItem] 			= useMutation(mutations.ADD_ITEM);
 
-
 	// const { loading, error, data, refetch } = useQuery(GET_DB_TODOS);
 	// if(loading) { console.log(loading, 'loading'); }
 	// if(error) { console.log(error, 'error'); }
 	// if(data) { todolists = data.getAllTodos; }
+	//#endregion
 
 	const auth = props.user === null ? false : true;
-	console.log("Auth?");
-	console.log(auth);
 
 	let maps = [];
 	const { loading, error, data, refetch } = useQuery(GET_MAPS);
@@ -53,6 +51,7 @@ const Homescreen = (props) => {
 	if (error) { console.log(error, 'error');}
 	if (data) { maps = data.getAllMaps;}
 
+	//#region old code
 	// const refetchTodos = async (refetch) => {
 	// 	const { loading, error, data } = await refetch();
 	// 	if (data) {
@@ -197,8 +196,8 @@ const Homescreen = (props) => {
 	// 	toggleShowDelete(!showDelete)
 	// }
 
+	//#endregion
 	return (
-
 		<WLayout wLayout="header-lside">
 			<Router>
 			<WLHeader>
@@ -238,7 +237,10 @@ const Homescreen = (props) => {
 						{auth && <Route path="/maps" render= {
 							() => <Maps
 								fetchUser={props.fetchUser}
-								user={props.user}/>
+								user={props.user}
+								maps={maps}
+								refetchMaps={refetch}
+								setDeleteModal={setDeleteModal}/>
 								}
 							/>}
 					</Switch>
@@ -248,7 +250,9 @@ const Homescreen = (props) => {
 
 			</WLMain>
 			</Router>
-
+			{
+            showDeleteModal && (<DeleteMap />)
+        }
 			{/* <WLSide side="left">
 				<WSidebar>
 					{

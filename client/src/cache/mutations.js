@@ -101,3 +101,8 @@ export const ADD_MAP = gql`
 		addMap(map: $map)
 	}
 `;
+// export const DELETE_MAP = gql`
+// 	mutation deleteMap($map_id: String!) {
+// 		deleteMap(map_id: $map_id)
+// 	}
+// `;

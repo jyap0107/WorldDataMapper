@@ -5,8 +5,14 @@ module.exports = {
     Query: {
         getAllMaps: async (_, __, { req }) => {
 			const _id = new ObjectId(req.userId);
-			if(!_id) { return([])};
-			const maps = await Region.find({userID: _id, parentRegion: ""});
+            console.log("ID?");
+            console.log(_id);
+			if(!_id) { 
+                console.log("No Id");
+                return([])
+            }
+			const maps = await Region.find({userID: _id, parentRegion: null});
+            console.log(maps);
 			if(maps) return (maps);
         }
     },
@@ -20,7 +26,7 @@ module.exports = {
             const newMap = new Region({
                 _id: objectId,
                 userID: userID,
-                name: "bo",
+                name: name,
                 capital: capital,
                 leader: leader,
                 numSubregions: numSubregions,
