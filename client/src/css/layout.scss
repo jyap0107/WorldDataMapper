@@ -268,7 +268,7 @@ label {
     width: 80%;
 }
 .material-icons:hover {
-    background-color: white;
+    background-color: rgba(255, 255, 255, 0.3);
     cursor: pointer;
 }
 .material-icons:active {
@@ -387,4 +387,35 @@ label {
     margin-right: auto;
     width: 90%;
     height: 700px;
+}
+.regions-header {
+    display: flex;
+    justify-content: center;
+    font-size: x-large;
+    font-family: Verdana;
+    background-color: rgb(32, 32, 32);
+    color: white;
+    align-items:center
+}
+
+.region-link {
+    font-weight: bold;
+    text-decoration: none;
+}
+.regions-table-header {
+    display: flex;
+    position: relative;
+    align-items: center;
+    height: 50%;
+    background-color: rgb(116, 30, 30);
+    font-family: "Verdana";
+    color:white;
+}
+.add-subregion-button {
+    position:absolute;
+    margin-right:1350px;
+    font-size: 35pt;
+}
+.col {
+    padding-left:3px;
 }

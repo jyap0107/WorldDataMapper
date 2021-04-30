@@ -19,7 +19,7 @@ module.exports = {
             console.log(map);
             const objectId = new ObjectId();
             console.log(map);
-            const { _id, userID, name, capital, leader, numSubregions, landmarks } = map;
+            const { _id, userID, name, capital, leader, numSubregions, landmarks, index } = map;
             const newMap = new Region({
                 _id: objectId,
                 userID: userID,
@@ -27,7 +27,8 @@ module.exports = {
                 capital: capital,
                 leader: leader,
                 numSubregions: numSubregions,
-                landmarks: landmarks
+                landmarks: landmarks,
+                index: index
             });
             const updated = await newMap.save();
             if (updated) return objectId;

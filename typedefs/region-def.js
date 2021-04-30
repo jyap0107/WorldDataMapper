@@ -10,6 +10,7 @@ const typeDefs = gql `
         leader: String
         numSubregions: Int!
         landmarks: [String]
+        index: Int
         flag: String
 	}
 	extend type Query {
@@ -29,6 +30,7 @@ const typeDefs = gql `
         leader: String
         numSubregions: Int
         landmarks: [String]
+        index: Int
         flag: String
     }
 

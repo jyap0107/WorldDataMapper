@@ -26,6 +26,8 @@ const Maps = (props) => {
 
     const createNewMap = async () => {
         if (input != "") {
+            const length = props.maps.length
+            const index = length > 1 ? props.maps[length - 1].index + 1 : 0;
             console.log(input);
             let map = {
                 _id: "",
@@ -35,7 +37,8 @@ const Maps = (props) => {
                 leader: "",
                 numSubregions: 0,
                 landmarks: "",
-                flag: ""
+                flag: "",
+                index: index,
             };
             const { data } = await AddMap({variables: {map: map}});
             target.value = "";

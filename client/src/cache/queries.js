@@ -41,6 +41,8 @@ export const GET_MAPS = gql`
 			leader
 			numSubregions
 			landmarks
+			index
 		}
 	}
 `;
+

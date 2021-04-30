@@ -5,7 +5,7 @@ import { Link } from 'react-router-dom'
 const MapEntry = (props) => {
 
     const [editing, toggleEditing] = useState(false);
-    const link = `/${props.map._id}`
+    const link = `/${props.map._id}/subregions`
 
     const handleClick = (e) => {
         props.setShowDeleteModal();

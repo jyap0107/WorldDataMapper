@@ -13,6 +13,7 @@ import { useMutation, useQuery } 		from '@apollo/client';
 import { WNavbar, WSidebar, WNavItem } 	from 'wt-frontend';
 import { WLayout, WLHeader, WLMain, WLSide } from 'wt-frontend';
 import { BrowserRouter as Router, HashRouter, Switch, Route, Redirect, Link } from 'react-router-dom';
+import RegionViewer from '../main/RegionViewer';
 	
 const Homescreen = (props) => {
 
@@ -212,7 +213,7 @@ const Homescreen = (props) => {
 				<WNavbar color="colored" className="navbar">
 					<ul>
 						<WNavItem>
-							<Logo className='logo' />
+							<Logo className='logo' handleSetCurrentRegion={handleSetCurrentRegion} />
 						</WNavItem>
 					</ul>
 					<ul>
@@ -220,6 +221,7 @@ const Homescreen = (props) => {
 							fetchUser={props.fetchUser} auth={auth}
 							user={props.user} 
 							setCurrentRegion={setCurrentRegion}
+							
 						/>
 					</ul>
 				</WNavbar>
@@ -254,12 +256,18 @@ const Homescreen = (props) => {
 								handleSetCurrentRegion={handleSetCurrentRegion}/>
 								}
 							/>}
-						{auth && <Route path="/:currentRegion" render= {
+						{auth && <Route path="/:currentRegion/subregions" render= {
 							() => <RegionSpreadsheet
 							fetchUser={props.fetchUser}
 							user={props.user}
 							maps={maps}
 							setCurrentRegion={setCurrentRegion}
+							/>}
+						/>}
+						{auth && <Route path="/:currentRegion/view" render= {() => <RegionViewer
+							fetchUser={props.fetchUser}
+							user={props.user}
+							maps={maps}
 							/>}
 						/>}
 					</Switch>

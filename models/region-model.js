@@ -31,6 +31,9 @@ const regionSchema = new Schema(
 		},
 		flag: {
 			type: String,
+		},
+		index: {
+			type: Number,
 		}
 	},
 	{ timestamps: true }
