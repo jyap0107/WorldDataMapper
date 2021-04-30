@@ -1,9 +1,11 @@
 import React, { useState } from 'react';
 import { WButton, WInput, WRow, WCol } from 'wt-frontend';
+import { Link } from 'react-router-dom'
 
 const MapEntry = (props) => {
 
     const [editing, toggleEditing] = useState(false);
+    const link = `/${props.map._id}`
 
     const handleClick = (e) => {
         props.setShowDeleteModal();
@@ -17,9 +19,9 @@ const MapEntry = (props) => {
         <div id={props.map._id} className="map-entry">
             { editing ? 
                 <input className="map-name-input" defaultValue={props.map.name} onBlur={handleEdit} autoFocus={true}/> :
-                <span className="map-name" onClick={() => toggleEditing(true)}>{props.map.name}</span>}
+                <Link to={link} style={{ color: '#FFF' }}><span className="map-name" onClick={() => props.handleSetCurrentRegion(props.map._id)}>{props.map.name}</span></Link>}
             <span class="material-icons delete-map" onClick = {handleClick}>delete</span>
-            <span class="material-icons edit-map-name">mode_edit</span>
+            <span class="material-icons edit-map-name" onClick={() => toggleEditing(true)}>mode_edit</span>
         </div>
         
     );

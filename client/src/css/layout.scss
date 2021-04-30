@@ -135,7 +135,8 @@ html {
 .signup-screen {
     width: 375px;
     height: 110%;
-    margin-left: 27%;
+    margin-left: auto;
+    margin-right: auto;
     margin-top: 5%;
 }
 label {
@@ -155,8 +156,10 @@ label {
 }
 .maps-container {
     margin-top: 25px;
-    margin-left: 130px;
-    height: 600px;
+    // margin-left: 130px;
+    margin-left: auto;
+    margin-right: auto;
+    height: 500px;
     width: 800px;
 }
 .maps-content {
@@ -183,19 +186,20 @@ label {
     overflow-y: auto;
 }
 .map-entry {
-    background-color:rgb(248, 234, 234);
+    background-color:rgb(116, 30, 30);
+    color: white;
     padding-top:5px;
     padding-bottom: 5px;
     padding-left:5px;
     font-size: x-large;
     border-radius: 3px;
-    margin-top: 2px;
-    margin-bottom:3px;
-    margin-left: 2px;
-    margin-right: 2px;
+    margin-top: 5px;
+    margin-left: 5px;
+    margin-right: 5px;
 }
 .map-side {
     position: relative;
+    width: 50%;
 }
 .map-creation {
     display: flex;
@@ -220,6 +224,20 @@ label {
     padding-right: 10px;
     border: none;
 }
+.map-name-input {
+    font-size: x-large;
+    border: none;
+    background-color:rgb(248, 234, 234);
+    border-radius: 5px;
+    width: 80%;
+    
+}
+
+.map-name-input:focus {
+    outline: none !important;
+    border:1px solid white;
+    box-shadow: 0 0 5px #e2a1a1;
+}
 .map-input:focus {
     outline: none !important;
     border:2px solid white;
@@ -243,6 +261,11 @@ label {
     border-radius: 5px;
 }
 .map-name {
+    float: left;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    width: 80%;
 }
 .material-icons:hover {
     background-color: white;
@@ -260,6 +283,9 @@ label {
     margin-right: 7px;
     padding-top: 4px;
     border-radius: 5px;
+}
+.link {
+    color:white;
 }
 
 .modal-spacer {
@@ -340,7 +366,8 @@ label {
 }
 //#endregion
 .login-screen {
-    margin-left:27%;
+    margin-left: auto;
+    margin-right: auto;
     margin-top: 5%;
     height: 90%;
 }
@@ -354,4 +381,10 @@ label {
 }
 .account-footer {
     background-color: rgb(32, 32, 32);
+}
+.region-spreadsheet-container {
+    margin-left: auto;
+    margin-right: auto;
+    width: 90%;
+    height: 700px;
 }

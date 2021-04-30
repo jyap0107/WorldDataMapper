@@ -3,6 +3,7 @@ import Logo 							from '../navbar/Logo';
 import NavbarOptions 					from '../navbar/NavbarOptions';
 import Login 							from '../screens/Login';
 import Maps								from '../main/Maps';
+import RegionSpreadsheet				from '../main/RegionSpreadsheet'
 import DeleteMap						from '../modals/DeleteMap.js';
 import CreateAccount 					from '../screens/CreateAccount';
 import UpdateAccount					from '../screens/UpdateAccount';
@@ -14,8 +15,10 @@ import { WLayout, WLHeader, WLMain, WLSide } from 'wt-frontend';
 import { BrowserRouter as Router, HashRouter, Switch, Route, Redirect, Link } from 'react-router-dom';
 	
 const Homescreen = (props) => {
+
 	
 	const [showDeleteModal, setDeleteModal] = useState(false);
+	const [currentRegion, setCurrentRegion] = useState("");
 
 	//#region Hooks
 	const [activeList, setActiveList] 		= useState({});
@@ -44,9 +47,16 @@ const Homescreen = (props) => {
 	if (loading) { console.log(loading, 'loading');}
 	if (error) { console.log(error, 'error');}
 	if (data) { maps = data.getAllMaps;}
+	
+	let regionItem = maps.find(map => map._id == currentRegion);
 
 	const setShowDeleteModal = () => {
 		setDeleteModal(!showDeleteModal);
+	}
+	const handleSetCurrentRegion = (regionId) => {
+		console.log(regionId);
+		setCurrentRegion(regionId);
+		console.log(currentRegion);
 	}
 
 	//#region old code
@@ -196,10 +206,10 @@ const Homescreen = (props) => {
 
 	//#endregion
 	return (
-		<WLayout wLayout="header-lside">
+		<WLayout wLayout="header">
 			<Router>
 			<WLHeader>
-				<WNavbar color="colored">
+				<WNavbar color="colored" className="navbar">
 					<ul>
 						<WNavItem>
 							<Logo className='logo' />
@@ -209,12 +219,13 @@ const Homescreen = (props) => {
 						<NavbarOptions
 							fetchUser={props.fetchUser} auth={auth}
 							user={props.user} 
+							setCurrentRegion={setCurrentRegion}
 						/>
 					</ul>
 				</WNavbar>
 			</WLHeader>
-			<WLMain>
-				<div className="screen">
+			<WLMain className="screen">
+				<div>
 					<Switch>
 						{!auth && <Route path="/login" render={
 							() => <Login
@@ -238,9 +249,19 @@ const Homescreen = (props) => {
 								user={props.user}
 								maps={maps}
 								refetchMaps={refetch}
-								setShowDeleteModal={setShowDeleteModal}/>
+								setShowDeleteModal={setShowDeleteModal}
+								setCurrentRegion={setCurrentRegion}
+								handleSetCurrentRegion={handleSetCurrentRegion}/>
 								}
 							/>}
+						{auth && <Route path="/:currentRegion" render= {
+							() => <RegionSpreadsheet
+							fetchUser={props.fetchUser}
+							user={props.user}
+							maps={maps}
+							setCurrentRegion={setCurrentRegion}
+							/>}
+						/>}
 					</Switch>
 
 				</div>
@@ -248,45 +269,6 @@ const Homescreen = (props) => {
 
 			</WLMain>
 			</Router>
-			{/* {
-			showDeleteModal && (<DeleteMap showDeleteModal={showDeleteModal} setShowDeleteModal={setShowDeleteModal}/>)
-        } */}
-			{/* <WLSide side="left">
-				<WSidebar>
-					{
-						activeList ?
-							<SidebarContents
-								todolists={todolists} activeid={activeList.id} auth={auth}
-								handleSetActive={handleSetActive} createNewList={createNewList}
-								undo={tpsUndo} redo={tpsRedo}
-								updateListField={updateListField}
-							/>
-							:
-							<></>
-					}
-				</WSidebar>
-			</WLSide>
-			<WLMain>
-				{
-					activeList ? 
-							<div className="container-secondary">
-								<MainContents
-									addItem={addItem} deleteItem={deleteItem}
-									editItem={editItem} reorderItem={reorderItem}
-									setShowDelete={setShowDelete}
-									activeList={activeList} setActiveList={setActiveList}
-								/>
-							</div>
-						:
-							<div className="container-secondary" />
-				}
-
-			</WLMain> */}
-
-			{/* {
-				showDelete && (<Delete deleteList={deleteList} activeid={activeList._id} setShowDelete={setShowDelete} />)
-			} */}
-
 		</WLayout>
 	);
 };

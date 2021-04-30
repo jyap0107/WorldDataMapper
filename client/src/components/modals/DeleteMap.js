@@ -8,7 +8,7 @@ const DeleteMap = (props) => {
         props.setShowDeleteModal();
     }
     return (
-        <WModal className="delete-map-modal" visible={props.showDeleteModal} animation="slide-fade-top">
+        <WModal className="delete-map-modal" visible={props.showDeleteModal} animation="slide-fade-top" cover={true}>
             <WMHeader className="delete-map-header">
                 Delete Map?
             </WMHeader>

@@ -9,13 +9,13 @@ const LoggedIn = (props) => {
 	const [Logout] = useMutation(LOGOUT);
 
     const handleLogout = async (e) => {
+        props.setCurrentRegion("");
         Logout();
         const { data } = await props.fetchUser();
         if (data) {
             let reset = await client.resetStore();
         }
     };
-    console.log(props.user);
 
     return (
         <>

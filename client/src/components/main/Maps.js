@@ -61,7 +61,7 @@ const Maps = (props) => {
     return (
         <div>
              <WCard className="maps-container" raised>
-                <WLayout wLayout="header-content" className="example-layout-labels">
+                <WLayout wLayout="header-content">
                     <WLHeader className="maps-header">
                         <div className="maps-header-text">Your Maps</div></WLHeader>
                     <WCContent className="maps-content">
@@ -75,6 +75,8 @@ const Maps = (props) => {
                                         deleteMap={deleteMap}
                                         setDeleteMapId={setDeleteMapId}
                                         editField={editField}
+                                        setCurrentRegion={props.setCurrentRegion}
+                                        handleSetCurrentRegion={props.handleSetCurrentRegion}
                                     />
                                 ))
                             }
