@@ -4,8 +4,6 @@ import { WModal, WMHeader, WMMain, WButton } from 'wt-frontend';
 
 const DeleteMap = (props) => {
 
-    const handleDelete = async () => {
-    }
 
     return (
         <div className="delete-modal">
@@ -14,4 +12,4 @@ const DeleteMap = (props) => {
     );
 }
 
-export default Delete;
+export default DeleteMap;
