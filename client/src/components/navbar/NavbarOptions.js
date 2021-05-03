@@ -9,7 +9,7 @@ const LoggedIn = (props) => {
 	const [Logout] = useMutation(LOGOUT);
 
     const handleLogout = async (e) => {
-        props.setCurrentRegion("");
+        console.log(props);
         Logout();
         const { data } = await props.fetchUser();
         if (data) {
@@ -26,7 +26,7 @@ const LoggedIn = (props) => {
         <WNavItem hoverAnimation="lighten">
             <Link to="/">
                 <WButton className="navbar-options" onClick={handleLogout} wType="texted" hoverAnimation="text-primary">
-                    Logout
+                    <Link to="/welcome">Logout</Link>
                 </WButton>
             </Link>
         </WNavItem >
@@ -57,7 +57,7 @@ const NavbarOptions = (props) => {
         <>
             {
                 props.auth === false ? <LoggedOut setShowLogin={props.setShowLogin} setShowCreate={props.setShowCreate} />
-                : <LoggedIn user={props.user} fetchUser={props.fetchUser} setActiveList={props.setActiveList} logout={props.logout} />
+                : <LoggedIn user={props.user} fetchUser={props.fetchUser} setActiveList={props.setActiveList} logout={props.logout} handleSetCurrentRegion={props.handleSetCurrentRegion} />
             }
         </>
 

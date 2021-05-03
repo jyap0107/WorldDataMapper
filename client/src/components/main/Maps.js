@@ -14,7 +14,7 @@ const Maps = (props) => {
     const [showDeleteModal, setDeleteModal] = useState(false);
     const [deleteMapId, setDeleteMapId] = useState("");
     
-    const [AddMap] = useMutation(mutations.ADD_MAP);
+    const [AddRegion] = useMutation(mutations.ADD_REGION);
     const [DeleteMapMutation] = useMutation(mutations.DELETE_MAP);
     const [EditRegionField] = useMutation(mutations.EDIT_REGION_FIELD);
 
@@ -33,14 +33,16 @@ const Maps = (props) => {
                 _id: "",
                 userID: props.user._id,
                 name: input,
+                parentRegion: null,
                 capital: "",
                 leader: "",
                 numSubregions: 0,
-                landmarks: "",
+                landmarks: [],
                 flag: "",
                 index: index,
+                subregions: [],
             };
-            const { data } = await AddMap({variables: {map: map}});
+            const { data } = await AddRegion({variables: {region: map, isMap: true}});
             target.value = "";
             setInput("");
             await props.refetchMaps();
@@ -61,6 +63,7 @@ const Maps = (props) => {
         const { data } = await EditRegionField({variables: {region_id: regionId, field: field, value: name}})
         await props.refetchMaps();
     }
+    console.log(props.maps);
     return (
         <div>
              <WCard className="maps-container" raised>

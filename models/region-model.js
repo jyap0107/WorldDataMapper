@@ -14,7 +14,7 @@ const regionSchema = new Schema(
 			required: true
 		},
 		parentRegion: {
-			type: this
+			type: String
 		},
 		capital: {
 			type: String,
@@ -34,6 +34,9 @@ const regionSchema = new Schema(
 		},
 		index: {
 			type: Number,
+		},
+		subregions: {
+			type: [String],
 		}
 	},
 	{ timestamps: true }

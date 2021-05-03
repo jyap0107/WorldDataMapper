@@ -406,7 +406,7 @@ label {
     display: flex;
     position: relative;
     align-items: center;
-    height: 50%;
+    height: 30px;
     background-color: rgb(116, 30, 30);
     font-family: "Verdana";
     color:white;
@@ -416,6 +416,13 @@ label {
     margin-right:1350px;
     font-size: 35pt;
 }
-.col {
+.spreadsheet-content-container {
+    margin-top: -35px;
+}
+.spreadsheet-content {
+    position: relative;
     padding-left:3px;
+    padding-bottom:4px;
+    padding-top:4px;
+    border: black solid 1px;
 }

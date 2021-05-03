@@ -34,15 +34,29 @@ export const GET_MAPS = gql`
 			_id
 			userID
 			name
-			parentRegion {
-				_id
-			}
+			parentRegion
 			capital
 			leader
 			numSubregions
 			landmarks
 			index
+			subregions
 		}
 	}
 `;
-
+export const GET_REGIONS_BY_ID = gql`
+	query GetRegionsById($regionIds: [String]!) {
+		getRegionsById(regionIds: $regionIds) {
+			_id
+			userID
+			name
+			parentRegion
+			capital
+			leader
+			numSubregions
+			landmarks
+			index
+			subregions
+		}
+	}
+`;

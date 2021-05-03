@@ -34,6 +34,7 @@ const Login = (props) => {
 			toggleLoading(false)
 			// props.setShowLogin(false)
 			console.log("NO error, logged in!");
+			props.refetch();
 		};
 	};
 

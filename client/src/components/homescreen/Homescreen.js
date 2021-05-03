@@ -20,6 +20,7 @@ const Homescreen = (props) => {
 	
 	const [showDeleteModal, setDeleteModal] = useState(false);
 	const [currentRegion, setCurrentRegion] = useState("");
+	const [regionItem, setRegionitem] = useState(null);
 
 	//#region Hooks
 	const [activeList, setActiveList] 		= useState({});
@@ -42,22 +43,21 @@ const Homescreen = (props) => {
 	//#endregion
 
 	const auth = props.user === null ? false : true;
-
+	
 	let maps = [];
 	const { loading, error, data, refetch } = useQuery(GET_MAPS);
 	if (loading) { console.log(loading, 'loading');}
 	if (error) { console.log(error, 'error');}
 	if (data) { maps = data.getAllMaps;}
 	
-	let regionItem = maps.find(map => map._id == currentRegion);
 
 	const setShowDeleteModal = () => {
 		setDeleteModal(!showDeleteModal);
 	}
 	const handleSetCurrentRegion = (regionId) => {
-		console.log(regionId);
 		setCurrentRegion(regionId);
-		console.log(currentRegion);
+		let reg = maps.find(map => map._id == regionId);
+		setRegionitem(reg);
 	}
 
 	//#region old code
@@ -231,7 +231,8 @@ const Homescreen = (props) => {
 					<Switch>
 						{!auth && <Route path="/login" render={
 							() => <Login
-								fetchUser={props.fetchUser}/>
+								fetchUser={props.fetchUser}
+								refetch={refetch}/>
 								}
 							/>}
 						{!auth && <Route path="/createAccount" render={
@@ -253,7 +254,8 @@ const Homescreen = (props) => {
 								refetchMaps={refetch}
 								setShowDeleteModal={setShowDeleteModal}
 								setCurrentRegion={setCurrentRegion}
-								handleSetCurrentRegion={handleSetCurrentRegion}/>
+								handleSetCurrentRegion={handleSetCurrentRegion}
+								key={props.user}/>
 								}
 							/>}
 						{auth && <Route path="/:currentRegion/subregions" render= {
@@ -262,12 +264,16 @@ const Homescreen = (props) => {
 							user={props.user}
 							maps={maps}
 							setCurrentRegion={setCurrentRegion}
+							regionItem={regionItem}
+							handleSetCurrentRegion={handleSetCurrentRegion}
+							key={currentRegion}
 							/>}
 						/>}
 						{auth && <Route path="/:currentRegion/view" render= {() => <RegionViewer
 							fetchUser={props.fetchUser}
 							user={props.user}
 							maps={maps}
+							key={currentRegion}
 							/>}
 						/>}
 					</Switch>

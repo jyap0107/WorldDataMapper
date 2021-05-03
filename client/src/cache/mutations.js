@@ -96,9 +96,9 @@ export const UPDATE_TODOLIST_FIELD = gql`
 	}
 `;
 
-export const ADD_MAP = gql`
-	mutation addMap($map: RegionInput!) {
-		addMap(map: $map)
+export const ADD_REGION = gql`
+	mutation addRegion($region: RegionInput!, $isMap: Boolean!) {
+		addRegion(region: $region, isMap: $isMap)
 	}
 `;
 export const DELETE_MAP = gql`
