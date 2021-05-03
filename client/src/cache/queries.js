@@ -44,9 +44,9 @@ export const GET_MAPS = gql`
 		}
 	}
 `;
-export const GET_REGIONS_BY_ID = gql`
-	query GetRegionsById($regionIds: [String]!) {
-		getRegionsById(regionIds: $regionIds) {
+export const GET_SUBREGIONS_BY_ID = gql`
+	query GetSubregionsById($regionId: String!) {
+		getSubregionsById(regionId: $regionId) {
 			_id
 			userID
 			name
@@ -58,5 +58,10 @@ export const GET_REGIONS_BY_ID = gql`
 			index
 			subregions
 		}
+	}
+`;
+export const GET_REGION_NAME = gql`
+	query GetRegionName($regionId: String!) {
+		getRegionName(regionId: $regionId)
 	}
 `;

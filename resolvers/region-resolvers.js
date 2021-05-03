@@ -1,5 +1,6 @@
 const ObjectId = require('mongoose').Types.ObjectId;
 const Region = require('../models/region-model');
+const { searchIds } = require('../utils/recursive-search');
 
 module.exports = {
     Query: {
@@ -12,18 +13,23 @@ module.exports = {
 			const maps = await Region.find({userID: _id, parentRegion: null});
 			if(maps) return (maps);
         },
-        getRegionsById: async (_, args) => {
-            console.log("jfjadfnasdkfnasdkfnaksdfnka");
-            const { regionIds } = args;
-            let regions = [];
-            for (let i = 0; i < regionIds.length; i++) {
-                console.log(regionIds[i]);
-                let region = await Region.findOne({_id: regionIds[i]});
-                console.log(region);
-                regions.push(region);
+        getSubregionsById: async (_, args) => {
+            const { regionId } = args;
+            let subregionsIds = await Region.find({parentRegion: regionId});
+            let subregions = [];
+            for (let i = 0; i < subregionsIds.length; i++) {
+                let region = await Region.findOne({_id: subregionsIds[i]});
+                subregions.push(region);
             }
-            console.log(regions);
-            return regions;
+            return subregions;
+        },
+        getRegionName: async (_, args) => {
+            const { regionId} = args;
+            let subregion = await Region.findOne({_id: regionId});
+            console.log("SUBREGION name");
+            console.log(subregion);
+            if (subregion) return subregion.name;
+            else return "";
         }
     },
     Mutation: {
@@ -65,14 +71,13 @@ module.exports = {
                 })
                 const updated1 = await newSubregion.save();
                 // Update old subregions
-
                 const oldRegion = await Region.findOne({_id: parentRegion})
                 if (!oldRegion) return "not found";
                 let subregionsToUpdate = oldRegion.subregions;
+                let numSubregions2 = oldRegion.numSubregions + 1;
 		        subregionsToUpdate.push(newSubregion._id);
-                console.log("SUB TO UPDATE");
-                console.log(subregionsToUpdate);
-			    const updated2 = await Region.updateOne({_id: parentRegion}, { subregions: subregionsToUpdate });
+                console.log(numSubregions2);
+			    const updated2 = await Region.updateOne({_id: parentRegion}, { "$set": { subregions: subregionsToUpdate, numSubregions: numSubregions2 }});
                 if (updated1 || updated2) return objectId;
                 else return ("Could not add? Idk dababy");
             }
@@ -81,9 +86,12 @@ module.exports = {
             const { map_id } = args;
             const objectId = new ObjectId(map_id);
             const found = await Region.findOne({_id: objectId})
-            const deleted = await Region.deleteOne({_id: objectId});
-			if(deleted) return true;
-			else return false;
+            // const deleted = await Region.deleteOne({_id: objectId});
+            let everyId = await searchIds([], map_id);
+            console.log(everyId);
+            const deleted = await Region.deleteMany({_id: { $in: everyId}});
+            if (deleted) return true;
+            else return false;
         },
         editRegionField: async(_, args) => {
             const { region_id, field, value } = args;

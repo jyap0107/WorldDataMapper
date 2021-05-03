@@ -9,7 +9,7 @@ import { Link, useParams } from 'react-router-dom';
 
 const RegionViewer = (props) => {
     return(
-        <div>"SANCHOVIESSSSSSSSSSSSSS</div>
+        <div>UNDEFINED</div>
     )
 }
 

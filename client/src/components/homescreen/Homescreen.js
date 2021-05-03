@@ -12,7 +12,7 @@ import * as mutations 					from '../../cache/mutations';
 import { useMutation, useQuery } 		from '@apollo/client';
 import { WNavbar, WSidebar, WNavItem } 	from 'wt-frontend';
 import { WLayout, WLHeader, WLMain, WLSide } from 'wt-frontend';
-import { BrowserRouter as Router, HashRouter, Switch, Route, Redirect, Link } from 'react-router-dom';
+import { BrowserRouter as Router, HashRouter, Switch, Route, Redirect, Link, useLocation } from 'react-router-dom';
 import RegionViewer from '../main/RegionViewer';
 	
 const Homescreen = (props) => {
@@ -56,8 +56,6 @@ const Homescreen = (props) => {
 	}
 	const handleSetCurrentRegion = (regionId) => {
 		setCurrentRegion(regionId);
-		let reg = maps.find(map => map._id == regionId);
-		setRegionitem(reg);
 	}
 
 	//#region old code
