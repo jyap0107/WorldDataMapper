@@ -6,11 +6,13 @@ module.exports = {
     Query: {
         getAllMaps: async (_, __, { req }) => {
 			const _id = new ObjectId(req.userId);
+            const stringId = req.userId;
 			if(!_id) { 
                 console.log("No Id");
                 return([])
             }
-			const maps = await Region.find({userID: _id, parentRegion: null});
+			const maps2 = await Region.find({userID: _id, parentRegion: null});
+            const maps = await Region.aggregate([{ $match: {userID: stringId, parentRegion: null}},]).sort({index: 1});
 			if(maps) return (maps);
         },
         getSubregionsById: async (_, args) => {
@@ -102,6 +104,27 @@ module.exports = {
             const updated = await Region.updateOne({_id: objectId}, {[field]: value});
             if (updated) return true;
             else return false;
+        },
+        recentMapOnTop: async(_, args, { req }) => {
+            console.log("REDDIT MOMENT");
+            const { region_id } = args;
+            const userId = new ObjectId(req.userId);
+            const regionId = new ObjectId(region_id);
+            const maps = await Region.find({userID: userId, parentRegion: null});
+            // After getting all the maps, find the recent map ID and set to 0.
+            const topMap = await Region.find({_id: region_id});
+            for (let i = 0; i < maps.length; i++) {
+                if (maps[i]._id == region_id) {
+                    maps[i]._id = 0;
+                }
+                else {
+                    maps[i].index++;
+                }
+            }
+            console.log(maps);
+            const updateMaps = await Region.updateMany({userID: userId, parentRegion: null}, {$inc:{'index': 1}});
+            const updateTopMap = await Region.updateOne({userID: userId, parentRegion: null, _id: regionId}, {$set:{'index': 0}});
+            return true;
         }
         // 		updateTodolistField: async (_, args) => {
 // 			const { field, value, _id } = args;

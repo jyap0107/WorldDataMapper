@@ -111,3 +111,8 @@ export const EDIT_REGION_FIELD = gql`
 		editRegionField(region_id: $region_id, field: $field, value: $value)
 	}
 `;
+export const RECENT_MAP_ON_TOP = gql`
+	mutation RecentMapOnTop($region_id: String!) {
+		recentMapOnTop(region_id: $region_id)
+	}
+`;

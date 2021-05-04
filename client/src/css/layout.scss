@@ -410,6 +410,7 @@ label {
     background-color: rgb(116, 30, 30);
     font-family: "Verdana";
     color:white;
+    padding-left: 3px;
 }
 .add-subregion-button {
     position:absolute;
@@ -418,11 +419,38 @@ label {
 }
 .spreadsheet-content-container {
     margin-top: -35px;
+    overflow-y:auto;
 }
 .spreadsheet-content {
     position: relative;
     padding-left:3px;
-    padding-bottom:4px;
-    padding-top:4px;
+    padding-bottom: 8px;
+    padding-top:8px;
     border: black solid 1px;
+}
+.globe {
+    height: 300px;
+    width: 300px;
+    margin-left: 50px;
+    margin-top: 50px;
+}
+.globe-welcome {
+    display: block;
+    margin-left: auto;
+    margin-right: auto;
+    height: 500px;
+}
+.welcome-text {
+    display: block;
+    margin-left: auto;
+    margin-right: auto;
+    width: 600px;
+    color: white;
+    font-size: x-large;
+    text-align: center;
+    margin-bottom: 25px;
+    margin-top: 25px;
+}
+.logo-in {
+    margin-left: -16px;
 }

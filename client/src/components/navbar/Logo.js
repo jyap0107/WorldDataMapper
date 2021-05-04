@@ -3,11 +3,15 @@ import { Link } from 'react-router-dom';
 
 const Logo = (props) => {
     return (
-        <Link to="/maps" className='logo' onClick={props.handleSetCurrentRegion("")}>
+        <div className='logo'>
+        {props.user ? <Link to="/maps" className='logo-in' onClick={props.handleSetCurrentRegion("")}>
             The World<br></br>
             Data Mapper
-
-        </Link>
+        </Link> : <span>
+            The World<br></br>
+            Data Mapper
+        </span>}
+        </div>
     );
 };
 

@@ -81,6 +81,7 @@ module.exports = {
 				return({});
 			}
 			const currentUser = await User.findById(_id);
+			console.log(currentUser.name);
 			const alreadyRegistered = await User.findOne({email: email});
 			// If already registed but you ARE the current user, it's OK. If you ARENT then we got a situation.
 			if (alreadyRegistered && !(currentUser.email == email)) {
@@ -91,14 +92,14 @@ module.exports = {
 					password: ''}));
 				}
 			if (email != "") {
-				let user = await User.updateOne({email: email});
+				let user = await User.updateOne({_id: _id}, {email: email});
 			}
 			if (password != "") {
 				const hashed = await bcrypt.hash(password, 10);
-				let user = await User.updateOne({password: hashed});
+				let user = await User.updateOne({_id: _id}, {password: hashed});
 			}
 			if (name != "") {
-				let user = await User.updateOne({name: name});
+				let user = await User.updateOne({_id: _id}, {name: name});
 			}
 			return ({});
 			},

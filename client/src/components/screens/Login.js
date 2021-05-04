@@ -1,12 +1,13 @@
 import React, { useState } 	from 'react';
 import { LOGIN } 			from '../../cache/mutations';
 import { useMutation }    	from '@apollo/client';
-import { Link } from 'react-router-dom';
+import { Link, useHistory } from 'react-router-dom';
 
 import { WGrid, WCol, WLHeader, WLFooter, WLMain, WCard, WModal, WMHeader, WMMain, WMFooter, WButton, WInput, WLayout } from 'wt-frontend';
 import WLSide from 'wt-frontend/build/components/wlayout/WLSide';
 
 const Login = (props) => {
+	let history = useHistory();
 	const [input, setInput] = useState({ email: '', password: '' });
 	const [loading, toggleLoading] = useState(false);
 	const [showErr, displayErrorMsg] = useState(false);
@@ -25,7 +26,7 @@ const Login = (props) => {
 		const { loading, error, data } = await Login({ variables: { ...input } });
 		if (loading) { toggleLoading(true) };
 		if (data.login._id === null) {
-			displayErrorMsg(true);
+			alert("Incorrect email or password.");
 			return;
 		}
 		if (data) {
@@ -34,6 +35,7 @@ const Login = (props) => {
 			toggleLoading(false)
 			// props.setShowLogin(false)
 			console.log("NO error, logged in!");
+			history.push("/maps")
 			props.refetch();
 		};
 	};
@@ -65,7 +67,7 @@ const Login = (props) => {
 			</WLMain>
 			<WMFooter className='account-footer'>
 				<div className='account-buttons'>
-					<Link to="/maps">
+					<Link>
 						<WButton className="modal-button" onClick={handleLogin} span clickAnimation="ripple-light" hoverAnimation="darken" shape="rounded" color="primary">
 							Login
 						</WButton>

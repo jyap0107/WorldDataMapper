@@ -24,7 +24,7 @@ const LoggedIn = (props) => {
             </Link>
         </WNavItem>
         <WNavItem hoverAnimation="lighten">
-            <Link to="/">
+            <Link to="/welcome">
                 <WButton className="navbar-options" onClick={handleLogout} wType="texted" hoverAnimation="text-primary">
                     <Link to="/welcome">Logout</Link>
                 </WButton>

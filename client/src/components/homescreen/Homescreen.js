@@ -14,6 +14,7 @@ import { WNavbar, WSidebar, WNavItem } 	from 'wt-frontend';
 import { WLayout, WLHeader, WLMain, WLSide } from 'wt-frontend';
 import { BrowserRouter as Router, HashRouter, Switch, Route, Redirect, Link, useLocation } from 'react-router-dom';
 import RegionViewer from '../main/RegionViewer';
+import Welcome from '../main/Welcome';
 	
 const Homescreen = (props) => {
 
@@ -211,7 +212,7 @@ const Homescreen = (props) => {
 				<WNavbar color="colored" className="navbar">
 					<ul>
 						<WNavItem>
-							<Logo className='logo' handleSetCurrentRegion={handleSetCurrentRegion} />
+							<Logo user={props.user}handleSetCurrentRegion={handleSetCurrentRegion} />
 						</WNavItem>
 					</ul>
 					<ul>
@@ -274,6 +275,8 @@ const Homescreen = (props) => {
 							key={currentRegion}
 							/>}
 						/>}
+						<Route exact path="/"> {auth ? <Redirect to="/maps"></Redirect> : <Redirect to="/welcome"></Redirect>}</Route>
+						<Route path="/welcome" render={() => <Welcome/>}></Route>
 					</Switch>
 
 				</div>

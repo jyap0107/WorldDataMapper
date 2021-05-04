@@ -5,6 +5,7 @@ import DeleteMap						from '../modals/DeleteMap.js';
 import * as mutations 					from '../../cache/mutations';
 import { WLHeader, WCContent, WLFooter, WLMain, WCard, WModal, WMHeader, WMMain, WMFooter, WButton, WInput, WLayout } from 'wt-frontend';
 import WCFooter from 'wt-frontend/build/components/wcard/WCFooter';
+import globe from '../../utils/globe.jpg';
 
 const Maps = (props) => {
 
@@ -27,7 +28,7 @@ const Maps = (props) => {
     const createNewMap = async () => {
         if (input != "") {
             const length = props.maps.length
-            const index = length > 1 ? props.maps[length - 1].index + 1 : 0;
+            const index = length > 0 ? props.maps[length - 1].index + 1 : 0;
             console.log(input);
             let map = {
                 _id: "",
@@ -83,12 +84,13 @@ const Maps = (props) => {
                                         editField={editField}
                                         setCurrentRegion={props.setCurrentRegion}
                                         handleSetCurrentRegion={props.handleSetCurrentRegion}
+                                        refetchMaps={props.refetchMaps}
                                     />
                                 ))
                             }
                         </WCContent>
                         <WCContent className="maps-side">
-                            <div className="map-image">IMAGE</div>
+                            <div className="map-image"><img src={globe} className="globe" alt="logo"/></div>
                             <WCFooter className="map-creation">
                                 <WButton className="map-button" color="custom-color" size="medium" className = "map-create" onClick = {createNewMap} clickAnimation="ripple-light" hoverAnimation="darken">Add Map</WButton>
                                 <div className="map-input-wrapper">

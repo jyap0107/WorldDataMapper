@@ -23,6 +23,7 @@ const typeDefs = gql `
         addRegion(region: RegionInput!, isMap: Boolean!): String
         deleteMap(map_id: String!): Boolean
         editRegionField(region_id: String!, field: String!, value: String!): Boolean
+        recentMapOnTop(region_id: String!): Boolean
 	}
     input RegionInput {
         _id: String
