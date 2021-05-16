@@ -118,4 +118,19 @@ export const GET_SIBLING_REGIONS = gql`
 		getSiblingRegions(region_id: $region_id)
 	}
 `;
-
+export const GET_REGION_PATH = gql`
+	query GetRegionPath($region_id: String) {
+		getRegionPath(region_id: $region_id) {
+			_id
+			userID
+			name
+			parentRegion
+			capital
+			leader
+			numSubregions
+			landmarks
+			index
+			subregions
+		}
+	}
+`;

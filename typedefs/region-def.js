@@ -22,6 +22,7 @@ const typeDefs = gql `
         getLandmarks(region_id: String!): [String]!
         getPossibleParents(region_id: String!): [Region]
         getSiblingRegions(region_id: String!): [String]
+        getRegionPath(region_id: String): [Region]
 	}
 	extend type Mutation {
         addRegion(region: RegionInput!, isMap: Boolean!, index: Int): String

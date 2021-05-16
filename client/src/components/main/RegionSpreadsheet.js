@@ -39,12 +39,14 @@ const RegionSpreadsheet = (props) => {
 
     useEffect(() => {
             getSubregions({variables: {regionId: currentRegion}}, {fetchPolicy: 'cache-and-network'});
-        }, [getSubregions, currentRegion])
+            props.setCurrentRegion(currentRegion);
+        }, [getSubregions, currentRegion, props.setCurrentRegion])
 
     const regionViewer = `/${currentRegion}/view`
     if (data && regionData && regionData.data) {
         let tps = props.tps;
         let name = regionData.data.getRegion.name;
+        let parent = regionData.data.getRegion.parentRegion;
         const subregions = data.getSubregionsById;
         const linkTo = {
             pathname: `/${currentRegion}/view`,
@@ -148,7 +150,11 @@ const RegionSpreadsheet = (props) => {
                             }
                             
                             <span className="regions-header-text">Region:&nbsp; 
-                            <Link className="region-link" to={{pathname: `/${currentRegion}/view`, state: {subregions: subregions}}} style={{ color: '#205b9e'}}>{name}</Link></span>
+                            { parent ? 
+                            <Link className="region-link" to={{pathname: `/${currentRegion}/view`, state: {subregions: subregions}}} style={{ color: '#205b9e'}}>{name}</Link> :
+                            <span className="region-link" style={{color:'#205b9e'}}>{name}</span>
+                            }
+                        </span>
                         </div>
                         <WCContent>
                             <WLayout wLayout="header-content">

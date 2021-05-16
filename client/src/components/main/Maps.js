@@ -20,6 +20,8 @@ const Maps = (props) => {
     const [DeleteMapMutation] = useMutation(mutations.DELETE_REGION);
     const [EditRegionField] = useMutation(mutations.EDIT_REGION_FIELD);
 
+    useEffect(() => props.setCurrentRegion(""))
+
     const updateInput = async (event) => {
         const value = event.target.value;
         setTarget(event.target);
@@ -33,7 +35,6 @@ const Maps = (props) => {
         if (input != "") {
             const length = props.maps.length
             const index = length > 0 ? props.maps[length - 1].index + 1 : 0;
-            console.log(input);
             let map = {
                 _id: "",
                 userID: props.user._id,
@@ -59,19 +60,14 @@ const Maps = (props) => {
 		setDeleteModal(!showDeleteModal);
 	}
     const deleteMap = async () => {
-        console.log(deleteMapId);
-        console.log("Map being Deleted.");
         const { data } = await DeleteMapMutation({variables: {region_id: deleteMapId, isMap: true}});
-        console.log("Deleted?");
         await props.refetchMaps();
 
     }
     const editField = async (regionId, field, name) => {
-        console.log("YEAHHHHHHHHHHH");
         const { data } = await EditRegionField({variables: {region_id: regionId, field: field, value: name}})
         await props.refetchMaps();
     }
-    console.log(props.maps);
     return (
         <div>
              <WCard className="maps-container" raised>

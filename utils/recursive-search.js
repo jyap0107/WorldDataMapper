@@ -72,19 +72,18 @@ const findOtherSubregionsHelper = async (rootRegion, baseArray, baseRegion, pare
         }
     }
 }
-const numSubregions = async (rootRegion) => {
-    let currNum = 0;
-    await numSubregionsHelper(rootRegion, currNum);
-    return currNum;
+const regionPath = async (rootRegion) => {
+    let path = [];
+    await regionPathHelper(rootRegion, path);
+    return path;
 }
-const numSubregionsHelper = async (rootRegion, currNum) => {
+const regionPathHelper = async (rootRegion, path) => {
     const objectId = new ObjectId(rootRegion);
-    const region = Region.findOne({_id: rootRegion});
-    currNum++;
-    const subregions = region.subregions;
-    for (let i = 0; i < subregions.length; i++) {
-        numSubregionsHelper(subregions[i], currNum);
+    const region = await Region.findOne({_id: objectId});
+    path.unshift(region);
+    if (region.parentRegion != null) {
+        await regionPathHelper(region.parentRegion, path);
     }
 }
 
-module.exports = {searchIds, findOtherSubregions, numSubregions};
+module.exports = {searchIds, findOtherSubregions, regionPath};

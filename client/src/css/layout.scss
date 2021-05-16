@@ -650,3 +650,13 @@ label {
 .parent-select {
     font-size: 15pt;
 }
+.breadcrumbs {
+    display: flex;
+    flex-direction: row;
+    white-space: nowrap;
+}
+.breadcrumb {
+    display: flex;
+    flex-direction: row;
+    white-space: nowrap;
+}

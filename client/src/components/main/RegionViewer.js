@@ -30,9 +30,14 @@ const RegionViewer = (props) => {
     const [addLandmark] = useMutation(mutations.ADD_LANDMARK)
     const [changeParentRegion] = useMutation(mutations.CHANGE_PARENT_REGION);
 
-
-    console.log(useLocation());
-    useEffect(() => props.setCurrentRegion(currentRegion))
+    useEffect(() => {
+        props.setCurrentRegion(currentRegion);
+        props.setIsViewer(true);})
+    useEffect(() => {
+        return () => {
+            props.setIsViewer(false);
+        }
+    })
     if (regionData && subregions && landmarksData && possibleParentsData && parentData) {;
         const region = regionData.getRegion;
         const landmarks = landmarksData.getLandmarks;
@@ -152,7 +157,7 @@ const RegionViewer = (props) => {
                                         <option>9</option>
                                     </select>) :
                                     <>
-                                    <span>{parent.name}</span>
+                                    <Link to={`/${parent._id}/subregions`} className="parent-link" style={{ color: '#205b9e', textDecoration: 'none'}}><span>{parent.name}</span></Link>
                                     <span class="material-icons edit-parent" onClick={toggleParentOptions}>mode_edit</span>
                                     </>
                                 }

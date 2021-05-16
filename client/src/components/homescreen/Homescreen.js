@@ -7,6 +7,8 @@ import RegionSpreadsheet				from '../main/RegionSpreadsheet'
 import DeleteMap						from '../modals/DeleteMap.js';
 import CreateAccount 					from '../screens/CreateAccount';
 import UpdateAccount					from '../screens/UpdateAccount';
+import Breadcrumbs						from '../navbar/Breadcrumbs';
+import SiblingNavigator					from '../navbar/SiblingNavigator';
 import { GET_MAPS }						from '../../cache/queries';
 import * as mutations 					from '../../cache/mutations';
 import { useMutation, useQuery } 		from '@apollo/client';
@@ -22,6 +24,7 @@ const Homescreen = (props) => {
 	const [showDeleteModal, setDeleteModal] = useState(false);
 	const [currentRegion, setCurrentRegion] = useState("");
 	const [regionItem, setRegionitem] = useState(null);
+	const [isViewer, setIsViewer] = useState(false);
 
 	//#region Hooks
 	const [activeList, setActiveList] 		= useState({});
@@ -212,14 +215,22 @@ const Homescreen = (props) => {
 				<WNavbar color="colored" className="navbar">
 					<ul>
 						<WNavItem>
-							<Logo user={props.user}handleSetCurrentRegion={handleSetCurrentRegion} />
+							<Logo user={props.user} setCurrentRegion={setCurrentRegion} />
 						</WNavItem>
 					</ul>
 					<ul>
 						<WNavItem>
-							{currentRegion}
+							<Breadcrumbs user={props.user} currentRegion={currentRegion} handleSetCurrentRegion={handleSetCurrentRegion}/>
 						</WNavItem>
 					</ul>
+					{isViewer ? 
+					<ul>
+						<WNavItem>
+							<SiblingNavigator user={props.user} currentRegion={currentRegion} setCurrentRegion={setCurrentRegion}/>
+						</WNavItem>
+					</ul> :
+					<></>
+					}
 					<ul>
 						<NavbarOptions
 							fetchUser={props.fetchUser} auth={auth}
@@ -281,6 +292,7 @@ const Homescreen = (props) => {
 							key={currentRegion}
 							tps={props.tps}
 							setCurrentRegion={setCurrentRegion}
+							setIsViewer={setIsViewer}
 							/>}
 						/>}
 						<Route exact path="/"> {auth ? <Redirect to="/maps"></Redirect> : <Redirect to="/welcome"></Redirect>}</Route>

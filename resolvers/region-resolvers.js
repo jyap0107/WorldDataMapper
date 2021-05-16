@@ -1,6 +1,6 @@
 const ObjectId = require('mongoose').Types.ObjectId;
 const Region = require('../models/region-model');
-const { searchIds, findOtherSubregions, numSubregions } = require('../utils/recursive-search');
+const { searchIds, findOtherSubregions, regionPath } = require('../utils/recursive-search');
 
 module.exports = {
     Query: {
@@ -32,13 +32,11 @@ module.exports = {
             return subregion
         },
         getParent: async (_, args) => {
-            console.log("yessir");
             const { region_id} = args;
             let subregion = await Region.findOne({_id: region_id});
             const parentId = subregion.parentRegion;
             const parentObjId = new ObjectId(parentId);
             const parent = Region.findOne({_id: parentObjId});
-            console.log("returning");
             return parent;
         },
         getLandmarks: async (_, args) => {
@@ -70,9 +68,23 @@ module.exports = {
         },
         getSiblingRegions: async  (_, args) => {
             const {region_id} = args;
-            const _id = new ObjectId(region_id);
-            const parent = await Region.findOne({_i: objectId});
+            const objectId = new ObjectId(region_id);
+            const region = await Region.findOne({_id: objectId});
+            const parent = await Region.findOne({_id: region.parentRegion});
+
             return parent.subregions;
+        },
+        getRegionPath: async (_, args) => {
+            const {region_id} = args;
+            const objectId = new ObjectId(region_id);
+            const region = await Region.findOne({_id: objectId});
+            if (region.parentRegion == null) {
+                return [];
+            }
+            else {
+                const path = await regionPath(region.parentRegion);
+                return path;
+            }
         }
     },
     Mutation: {

@@ -73,9 +73,11 @@ const SubregionEntry = (props) => {
                 <WCol size="1" className="col flag-col">
                     {subregion.flag}
                 </WCol>
+                <Link to={`/${subregion._id}/view`}>
                 <WCol size="4" className="col landmarks-col">
                     {subregion.landmarks.map((landmark, index) => index != subregion.landmarks.length-1 ? `${landmark}, ` : `${landmark}`)}
                 </WCol>
+                </Link>
         </WRow>
         </div>
     );
