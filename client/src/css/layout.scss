@@ -248,8 +248,6 @@ label {
 }
 .map-button {
     padding: 0px 0px;
-    background-color: red !important;
-    color: blue !important;
 }
 .edit-map-name {
     margin-left: auto;
@@ -272,7 +270,7 @@ label {
     cursor: pointer;
 }
 .material-icons:active {
-    background-color: white;
+    background-color: rgb(163, 163, 163);
     transform: translateY(2px);
 }
 .delete-map {
@@ -411,11 +409,18 @@ label {
     font-family: "Verdana";
     color:white;
     padding-left: 3px;
+    font-weight: bold;
+}
+.header-col:hover {
+    cursor: pointer;
+    font-weight: bolder;
+    color:rgb(255, 208, 138)
 }
 .add-subregion-button {
     position:absolute;
     margin-right:1350px;
     font-size: 35pt;
+    border-radius: 6px;
 }
 .spreadsheet-content-container {
     margin-top: -35px;
@@ -426,7 +431,8 @@ label {
     padding-left:3px;
     padding-bottom: 8px;
     padding-top:8px;
-    border: black solid 1px;
+    border-bottom: black solid 2px;
+    font-family: 'Verdana';
 }
 .globe {
     height: 300px;
@@ -453,4 +459,191 @@ label {
 }
 .logo-in {
     margin-left: -16px;
+}
+.undo-subregion-button {
+    position:absolute;
+    margin-right:1225px;
+    font-size: 35pt;
+    border-radius: 6px;
+}
+.redo-subregion-button {
+    position:absolute;
+    margin-right:1100px;
+    font-size: 35pt;
+    border-radius: 6px;
+}
+.name-col {
+    margin-left: 37px;
+    // display:flex;
+}
+.delete-subregion-button {
+    position: absolute;
+    margin-left: 2px;
+    font-size: 21pt;
+    margin-top: 4px;
+    padding-right: 1px;
+    border-radius: 6px;
+}
+.spreadsheet-input {
+    // background-color: red;
+    margin-top: -5px;
+    font-size:12pt;
+    font-family: "Verdana";
+}
+// .capital-col {
+//     background-color: blue;
+// }
+// .spreadsheet-content {
+//     background-color: yellow;
+// }
+.disabled-button {
+    opacity: 50%;
+}
+.disabled-button:hover {
+    cursor: default !important;
+    background-color: rgb(32, 32, 32) ;
+}
+.disabled-button:active {
+    transform: translateY(0px) !important;
+}
+.test {
+    width: 100%;
+    box-sizing: border-box;
+}
+.viewer-container {
+    margin-top: 25px;
+    // margin-left: 130px;
+    margin-left: auto;
+    margin-right: auto;
+    height: 650px;
+    width: 80%;
+}
+.viewer-content {
+    position: relative;
+    display: flex;
+    flex-direction: row;
+}
+.landmarks-container {
+    position: relative;
+    background-color: green;
+    display: block;
+    width: 50%;
+}
+.testing {
+}
+.viewer-info {
+    width: 50%;
+    background-color: rgb(37, 33, 33);
+    border-right: dotted white;
+}
+.landmarks-creation {
+    display: flex;
+    flex-direction: row;
+    height: 8%;
+    position: absolute;
+    bottom: 0px;
+    width: 100%;
+}
+.landmark-input {
+    color: black;
+    background-color: rgb(116, 30, 30);
+    line-height: 100%;
+    margin-left:0px;
+    height:100%;
+    width: 100%;
+    font-size: large;
+    color:white;
+    padding-left:10px;
+    padding-right: 10px;
+    border: none;
+    // position: absolute;
+    // display: block;
+}
+.landmarks-side {
+    background-color: green;
+    border-left: dotted white;
+}
+.landmark-input-wrapper {
+    background-color: yellow;
+    width:  100%;
+}
+.landmarks-list {
+    background-color: rgb(37, 33, 33);
+    height: 92%;
+
+}
+.viewer-flag {
+    height: 65%;
+}
+.viewer-details {
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    margin-top: -15px;
+}
+.detail {
+    font-size: x-large;
+    margin-top: 5px;
+    margin-bottom: 5px;
+    margin-left: 15px;
+    font-family: "Verdana";
+    color: white;
+}
+.edit-parent {
+    font-size: 20pt;
+    border-radius: 5px;
+    position:absolute;
+    margin-left: 10px;
+    margin-top: 1px;
+}
+.landmarks-header {
+    text-align: center;
+    font-size: xx-large;
+    font-weight: bold;
+    border-bottom: dotted white;
+    background-color: rgb(116, 30, 30);
+    color:white;
+    padding-top: 5px;
+    padding-bottom: 5px;
+    margin-bottom: 0px;
+}
+.landmarks-list {
+    color:white;
+    padding-top: -10px;
+}
+.landmark-entry {
+    font-size: x-large;
+    padding-top: 10px;
+    padding-bottom: 10px;
+    padding-left: 10px;
+}
+.landmark-entry:hover {
+    background-color: rgb(54, 48, 48);;
+}
+.landmark-child {
+    color: grey;
+}
+.delete-landmark {
+    margin-left: auto;
+    font-size: xx-large;
+    margin-right: 5px;
+    float: right;
+}
+.edit-landmark {
+    margin-left: auto;
+    margin-right: 5px;
+    font-size: xx-large;
+    float: right;
+}
+.undo-viewer {
+    color: white;
+    font-size: 30pt;
+    margin-left: 12px;
+    border-radius: 5px;
+}
+.redo-viewer {
+    color:white;
+    font-size: 30pt;
+    margin-left: 3px;
+    border-radius: 5px;
 }

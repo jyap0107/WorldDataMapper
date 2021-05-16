@@ -1,11 +1,12 @@
 import React, { useState, useEffect } from 'react';
 import { useMutation, useQuery } from '@apollo/client';
 import MapEntry from './MapEntry';
-import DeleteMap						from '../modals/DeleteMap.js';
+import DeleteMap					from '../modals/DeleteMap.js';
 import * as mutations 					from '../../cache/mutations';
 import { WLHeader, WCContent, WLFooter, WLMain, WCard, WModal, WMHeader, WMMain, WMFooter, WButton, WInput, WLayout } from 'wt-frontend';
 import WCFooter from 'wt-frontend/build/components/wcard/WCFooter';
 import globe from '../../utils/globe.jpg';
+
 
 const Maps = (props) => {
 
@@ -16,7 +17,7 @@ const Maps = (props) => {
     const [deleteMapId, setDeleteMapId] = useState("");
     
     const [AddRegion] = useMutation(mutations.ADD_REGION);
-    const [DeleteMapMutation] = useMutation(mutations.DELETE_MAP);
+    const [DeleteMapMutation] = useMutation(mutations.DELETE_REGION);
     const [EditRegionField] = useMutation(mutations.EDIT_REGION_FIELD);
 
     const updateInput = async (event) => {
@@ -26,6 +27,9 @@ const Maps = (props) => {
     }
 
     const createNewMap = async () => {
+        if (input == "") {
+            alert("Please Enter a Map Name Before Creating A Map");
+        }
         if (input != "") {
             const length = props.maps.length
             const index = length > 0 ? props.maps[length - 1].index + 1 : 0;
@@ -43,6 +47,7 @@ const Maps = (props) => {
                 index: index,
                 subregions: [],
             };
+
             const { data } = await AddRegion({variables: {region: map, isMap: true}});
             target.value = "";
             setInput("");
@@ -55,7 +60,9 @@ const Maps = (props) => {
 	}
     const deleteMap = async () => {
         console.log(deleteMapId);
-        const { data } = await DeleteMapMutation({variables: {map_id: deleteMapId}});
+        console.log("Map being Deleted.");
+        const { data } = await DeleteMapMutation({variables: {region_id: deleteMapId, isMap: true}});
+        console.log("Deleted?");
         await props.refetchMaps();
 
     }

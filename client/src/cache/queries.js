@@ -60,8 +60,41 @@ export const GET_SUBREGIONS_BY_ID = gql`
 		}
 	}
 `;
-export const GET_REGION_NAME = gql`
-	query GetRegionName($regionId: String!) {
-		getRegionName(regionId: $regionId)
+export const GET_REGION = gql`
+	query GetRegion($regionId: String!) {
+		getRegion(regionId: $regionId) {
+			_id
+			userID
+			name
+			parentRegion
+			capital
+			leader
+			numSubregions
+			landmarks
+			index
+			subregions
+		}
 	}
 `;
+export const GET_LANDMARKS = gql`
+	query GetLandmarks($region_id: String!) {
+		getLandmarks(region_id: $region_id)
+	}
+`;
+export const GET_POSSIBLE_PARENTS = gql`
+	query GetPossibleParents($region_id: String!) {
+		getPossibleParents(region_id: $region_id) {
+			_id
+			userID
+			name
+			parentRegion
+			capital
+			leader
+			numSubregions
+			landmarks
+			index
+			subregions
+		}
+	}
+`;
+

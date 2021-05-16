@@ -3,6 +3,131 @@ export class jsTPS_Transaction {
     doTransaction() {};
     undoTransaction () {};
 }
+export class AddSubregion_Transaction extends jsTPS_Transaction {
+    constructor(region, index, isMap, doFunction, undoFunction) {
+        super();
+        this.region = region;
+        this.index = index;
+        this.doFunction = doFunction;
+        this.undoFunction = undoFunction;
+        this.isMap = isMap
+    }
+    async doTransaction() {
+        const { data } = await this.doFunction({variables: { region: this.region, index: this.index, isMap: this.isMap }})
+        if (data) {
+            console.log(data.addRegion);
+            this.prevRegionId = data.addRegion;
+        }
+    }
+    async undoTransaction() {
+        console.log("yes");
+        const { data } = await this.undoFunction({variables: { region_id: this.prevRegionId, isMap: this.isMap }})
+    }
+}
+export class DeleteSubregion_Transaction extends jsTPS_Transaction {
+    constructor(_id, doFunction, undoFunction) {
+        super();
+        this._id = _id;
+        this.doFunction = doFunction;
+        this.undoFunction = undoFunction;
+    }
+    async doTransaction() {
+        const { data } = await this.doFunction({variables: {region_id: this._id, isMap: false}});
+        this.deletedRegions = data.deleteRegion;
+        this.deletedRegions = this.deletedRegions.map(({__typename, ...item}) => item);
+        console.log(this.deletedRegions);
+    }
+    async undoTransaction() {
+        const { data } = await this.undoFunction({variables: {parentRegion: this._id, regions: this.deletedRegions}})
+    }
+}
+export class EditSubregionField_Transaction extends jsTPS_Transaction {
+    constructor(_id, field, prevVal, newVal, doFunction) {
+        super();
+        this._id = _id;
+        this.field = field;
+        this.prevVal = prevVal;
+        this.newVal = newVal;
+        this.doFunction = doFunction;
+    }
+    async doTransaction() {
+        const { data } = await this.doFunction({variables: { region_id: this._id, field: this.field, value: this.newVal}});
+    }
+    async undoTransaction() {
+        const { data } = await this.doFunction({variables: { region_id: this._id, field: this.field, value: this.prevVal}});
+    }
+}
+export class SortCol_Transaction extends jsTPS_Transaction {
+    constructor(_id, field, sortAsc, doFunction, undoFunction) {
+        super();
+        this._id = _id;
+        this.field = field;
+        this.sortAsc = sortAsc;
+        this.doFunction = doFunction;
+        this.undoFunction = undoFunction;
+    }
+    async doTransaction() {
+        const { data } = await this.doFunction({variables: { region_id: this._id, field: this.field, sortAsc: this.sortAsc}});
+        this.prevOrder = data.sortCol;
+    }
+    async undoTransaction() {
+        const { data } = await this.undoFunction({variables: {region_id: this._id, order: this.prevOrder}})
+    }
+}
+export class DeleteLandmark_Transaction extends jsTPS_Transaction {
+    constructor(_id, landmark, index, doFunction, undoFunction) {
+        super();
+        this._id = _id;
+        this.landmark = landmark;
+        this.index = index;
+        this.doFunction = doFunction;
+        this.undoFunction = undoFunction;
+    }
+    async doTransaction() {
+        const { data } = await this.doFunction({variables: { region_id: this._id, value: this.landmark}})
+    }
+    async undoTransaction() {
+        const { data } = await this.undoFunction({variables: {region_id: this._id, landmark: this.landmark, index: this.index}})
+    }
+}
+export class AddLandmark_Transaction extends jsTPS_Transaction {
+    constructor(_id, landmark, doFunction, undoFunction) {
+        super();
+        this._id = _id;
+        this.landmark = landmark;
+        this.doFunction = doFunction;
+        this.undoFunction = undoFunction;
+    }
+    async doTransaction() {
+        const { data } = await this.doFunction({variables: { region_id: this._id, landmark: this.landmark, index: this.index}})
+    }
+    async undoTransaction() {
+        const { data } = await this.undoFunction({variables: {region_id: this._id, value: this.landmark}})
+    }
+}
+export class EditLandmark_Transaction extends jsTPS_Transaction {
+    constructor(_id, prevValue, newValue, doFunction) {
+        super();
+        this._id = _id;
+        this.prevValue = prevValue;
+        this.newValue = newValue;
+        this.doFunction = doFunction;
+        this.undoFunction = doFunction;
+    }
+    async doTransaction() {
+        const { data } = await this.doFunction({variables: { region_id: this._id, prevValue: this.prevValue, newValue: this.newValue}})
+    }
+    async undoTransaction() {
+        const { data } = await this.undoFunction({variables: {region_id: this._id, prevValue: this.newValue, newValue: this.prevValue}})
+    }
+}
+
+
+
+
+
+
+
 /*  Handles list name changes, or any other top level details of a todolist that may be added   */
 export class UpdateListField_Transaction extends jsTPS_Transaction {
     constructor(_id, field, prev, update, callback) {
@@ -15,6 +140,7 @@ export class UpdateListField_Transaction extends jsTPS_Transaction {
     }
     async doTransaction() {
 		const { data } = await this.updateFunction({ variables: { _id: this._id, field: this.field, value: this.update }});
+        console.log(data);
 		return data;
     }
     async undoTransaction() {
@@ -189,6 +315,7 @@ export class jsTPS {
      */
      async doTransaction() {
 		let retVal;
+        console.log(this);
         if (this.hasTransactionToRedo()) {   
             this.performingDo = true;
             let transaction = this.transactions[this.mostRecentTransaction+1];
@@ -240,6 +367,7 @@ export class jsTPS {
      */
      async undoTransaction() {
 		let retVal;
+        console.log(this);
         if (this.hasTransactionToUndo()) {
             this.performingUndo = true;
             let transaction = this.transactions[this.mostRecentTransaction];

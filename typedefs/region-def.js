@@ -17,13 +17,21 @@ const typeDefs = gql `
 	extend type Query {
 		getAllMaps: [Region]
         getSubregionsById(regionId: String!): [Region]
-        getRegionName(regionId: String!): String
+        getRegion(regionId: String!): Region
+        getLandmarks(region_id: String!): [String]!
+        getPossibleParents(region_id: String!): [Region]
 	}
 	extend type Mutation {
-        addRegion(region: RegionInput!, isMap: Boolean!): String
-        deleteMap(map_id: String!): Boolean
+        addRegion(region: RegionInput!, isMap: Boolean!, index: Int): String
+        addRegions(parentRegion: String!, regions: [RegionInput]!): String
+        deleteRegion(region_id: String!, isMap: Boolean): [Region]
         editRegionField(region_id: String!, field: String!, value: String!): Boolean
         recentMapOnTop(region_id: String!): Boolean
+        sortCol(region_id: String!, field: String!, sortAsc: Boolean): [String]
+        setOrder(region_id: String!, order: [String]!): Boolean
+        addLandmark(region_id: String!, landmark: String!, index: Int): String
+        deleteLandmark(region_id: String!, value: String!): String
+        editLandmark(region_id: String!, prevValue: String!, newValue: String!): String
 	}
     input RegionInput {
         _id: String

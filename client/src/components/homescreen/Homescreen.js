@@ -266,6 +266,7 @@ const Homescreen = (props) => {
 							regionItem={regionItem}
 							handleSetCurrentRegion={handleSetCurrentRegion}
 							key={currentRegion}
+							tps={props.tps}
 							/>}
 						/>}
 						{auth && <Route path="/:currentRegion/view" render= {() => <RegionViewer
@@ -273,6 +274,7 @@ const Homescreen = (props) => {
 							user={props.user}
 							maps={maps}
 							key={currentRegion}
+							tps={props.tps}
 							/>}
 						/>}
 						<Route exact path="/"> {auth ? <Redirect to="/maps"></Redirect> : <Redirect to="/welcome"></Redirect>}</Route>

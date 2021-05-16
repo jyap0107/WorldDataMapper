@@ -4,28 +4,73 @@ import { Link, useHistory } from 'react-router-dom'
 
 const SubregionEntry = (props) => {
 
+    const [editingName, toggleNameEdit] = useState(false);
+    const [editingCapital, toggleCapitalEdit] = useState(false);
+    const [editingLeader, toggleLeaderEdit] = useState(false);
+
     let history = useHistory();
-    const handleRegionClick = () => {
-        history.push()
+
+    const subregion = props.subregion;
+    const link = `/${subregion._id}/subregions`;
+
+    const handleNameEdit = (e) => {
+        toggleNameEdit(false);
+        const newName = e.target.value ? e.target.value : "No name";
+        const prevName = subregion.name;
+        if (newName != prevName) {
+            props.editSubregionField(subregion._id, "name", prevName, newName)
+        }
     }
-    const link = `/${props.subregion._id}/subregions`;
+    const handleCapitalEdit = (e) => {
+        toggleCapitalEdit(false);
+        const newCapital = e.target.value ? e.target.value : "No Capital";
+        const prevCapital = subregion.capital;
+        if (newCapital != prevCapital) {
+            props.editSubregionField(subregion._id, "capital", prevCapital, newCapital);
+        }
+    }
+    const handleLeaderEdit = (e) => {
+        toggleLeaderEdit(false);
+        const newLeader = e.target.value ? e.target.value : "No Leader";
+        const prevLeader = subregion.leader;
+        if (newLeader != prevLeader) {
+            props.editSubregionField(subregion._id, "leader", prevLeader, newLeader);
+        }
+    }
+
+    
     return(
         <div>
             <WRow className="spreadsheet-content">
+                <span class="material-icons delete-subregion-button" onClick={(e) => props.deleteSubregion(subregion._id, subregion.index)}>delete</span>
                 <WCol size="2" className="col name-col">
-                    <Link to={link} onClick={() => props.handleSetCurrentRegion(props.subregion._id)}><span>{props.subregion.name}</span></Link>
+                    {editingName ?
+                        <input className='spreadsheet-input' autoFocus={true} defaultValue={subregion.name}
+                        wType="outlined" barAnimation="solid" onBlur={handleNameEdit}></input> :
+                        <div onClick={() => toggleNameEdit(!editingName)}>
+                        <Link to={link} onClick={props.tps.clearAllTransactions} style={{ color: '#000', textDecoration: 'none'}} onClick={() => props.handleSetCurrentRegion(subregion._id)}><span>{subregion.name}</span></Link>
+                        </div>
+                    }
                 </WCol>
                 <WCol size="2" className="col capital-col">
-                    {props.subregion.capital}
+                    {editingCapital ? 
+                        <input className='spreadsheet-input' autoFocus={true} defaultValue={subregion.capital}
+                        wType="outlined" barAnimation="solid" onBlur={handleCapitalEdit}></input> :
+                        <div className="subregion-capital-text" onClick={() => toggleCapitalEdit(!editingCapital)}>{subregion.capital}</div>
+                    }
                 </WCol>
                 <WCol size="3" className="col leader-col">
-                    {props.subregion.leader}
+                    {editingLeader ? 
+                        <input className='spreadsheet-input' autoFocus={true} defaultValue={subregion.leader}
+                        wType="outlined" barAnimation="solid" onBlur={handleLeaderEdit}></input> :
+                        <div onClick={() => toggleLeaderEdit(!editingLeader)}>{subregion.leader}</div>
+                    }
                 </WCol>
                 <WCol size="1" className="col flag-col">
-                    {props.subregion.flag}
+                    {subregion.flag}
                 </WCol>
                 <WCol size="4" className="col landmarks-col">
-                    {props.subregion.landmarks}
+                    {subregion.landmarks.map((landmark, index) => index != subregion.landmarks.length-1 ? `${landmark}, ` : `${landmark}`)}
                 </WCol>
         </WRow>
         </div>

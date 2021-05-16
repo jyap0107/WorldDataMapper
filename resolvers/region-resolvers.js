@@ -1,6 +1,6 @@
 const ObjectId = require('mongoose').Types.ObjectId;
 const Region = require('../models/region-model');
-const { searchIds } = require('../utils/recursive-search');
+const { searchIds, findOtherSubregions } = require('../utils/recursive-search');
 
 module.exports = {
     Query: {
@@ -8,7 +8,6 @@ module.exports = {
 			const _id = new ObjectId(req.userId);
             const stringId = req.userId;
 			if(!_id) { 
-                console.log("No Id");
                 return([])
             }
 			const maps2 = await Region.find({userID: _id, parentRegion: null});
@@ -17,7 +16,9 @@ module.exports = {
         },
         getSubregionsById: async (_, args) => {
             const { regionId } = args;
-            let subregionsIds = await Region.find({parentRegion: regionId});
+            const objectId = new ObjectId(regionId);
+            const region = await Region.findOne({_id: regionId});
+            const subregionsIds = region.subregions;
             let subregions = [];
             for (let i = 0; i < subregionsIds.length; i++) {
                 let region = await Region.findOne({_id: subregionsIds[i]});
@@ -25,13 +26,38 @@ module.exports = {
             }
             return subregions;
         },
-        getRegionName: async (_, args) => {
+        getRegion: async (_, args) => {
             const { regionId} = args;
             let subregion = await Region.findOne({_id: regionId});
-            console.log("SUBREGION name");
-            console.log(subregion);
-            if (subregion) return subregion.name;
-            else return "";
+            return subregion
+        },
+        getLandmarks: async (_, args) => {
+            const {region_id} = args;
+            let landmarks = await searchIds([], region_id, "landmarks");
+            return landmarks;
+        },
+        getPossibleParents: async (_, args, { req }) => {
+            console.log("I WAS CALLED");
+            const {region_id} = args;
+            const _id = new ObjectId(req.userId)
+            const objectId = new ObjectId(region_id);
+            const baseRegion = await Region.findOne({_id: objectId});
+            const parent = baseRegion.parentRegion;
+            const parentRegion = await Region.findOne({_id: parent});
+            const maps = await Region.find({userID: _id, parentRegion: null})
+            // Find all maps, then recursively search downward. If the ID matches objectID, stop the search of
+            // that branch.
+            let possibleParents = [];
+            for (let i = 0; i < maps.length; i++) {
+                let possibilities = await findOtherSubregions(maps[i], [], baseRegion, parentRegion);
+                // console.log("Here is a possibility");
+                // console.log(possibilities);
+                possibleParents.push(...possibilities);
+            }
+            possibleParents.flat();
+            console.log("List of possible parents: ");
+            console.log(possibleParents);
+            return possibleParents;
         }
     },
     Mutation: {
@@ -39,7 +65,7 @@ module.exports = {
             const { region, isMap } = args;
             const objectId = new ObjectId();
             const { _id, userID, name, parentRegion, capital, leader, numSubregions, landmarks, index, subregions } = region;
-            console.log(subregions);
+            // console.log(subregions);
             if (isMap) {
                 const newMap = new Region({
                     _id: objectId,
@@ -78,35 +104,48 @@ module.exports = {
                 let subregionsToUpdate = oldRegion.subregions;
                 let numSubregions2 = oldRegion.numSubregions + 1;
 		        subregionsToUpdate.push(newSubregion._id);
-                console.log(numSubregions2);
+                // console.log(numSubregions2);
 			    const updated2 = await Region.updateOne({_id: parentRegion}, { "$set": { subregions: subregionsToUpdate, numSubregions: numSubregions2 }});
                 if (updated1 || updated2) return objectId;
                 else return ("Could not add? Idk dababy");
             }
         },
-        deleteMap: async(_, args) => {
-            const { map_id } = args;
-            const objectId = new ObjectId(map_id);
+        addRegions: async(_, args) => {
+            const { parentRegion, regions } = args;
+            const inserted = await Region.insertMany(regions);
+            const objectId = new ObjectId(parentRegion);
+            const parent = await Region.updateOne({_id: objectId}, {$inc:{'numSubregions': 1}});
+            return "yes";
+        },
+        deleteRegion: async(_, args) => {
+            const { region_id, isMap } = args;
+            const objectId = new ObjectId(region_id);
             const found = await Region.findOne({_id: objectId})
+
             // const deleted = await Region.deleteOne({_id: objectId});
-            let everyId = await searchIds([], map_id);
-            console.log(everyId);
+            let everyId = await searchIds([], region_id, "subregions");
+            // console.log(everyId);
+            const deletedSubregions = await Region.find({_id: { $in: everyId}});
             const deleted = await Region.deleteMany({_id: { $in: everyId}});
-            if (deleted) return true;
-            else return false;
+
+            // Also have to delete it from parent, if exists.
+            if (!isMap) {
+                const parent = await Region.findOne({_id: found.parentRegion});
+                let subregions = parent.subregions.filter(id => id != objectId);
+                let numOfSubregions = parent.numSubregions - 1;
+                const updated2 = await Region.updateOne({_id: found.parentRegion}, { "$set": { subregions: subregions, numSubregions: numOfSubregions}});
+            }
+            if (deleted) return deletedSubregions;
+            else return [];
         },
         editRegionField: async(_, args) => {
             const { region_id, field, value } = args;
-            console.log(region_id);
-            console.log(field);
-            console.log(value);
             const objectId = new ObjectId(region_id);
             const updated = await Region.updateOne({_id: objectId}, {[field]: value});
             if (updated) return true;
             else return false;
         },
         recentMapOnTop: async(_, args, { req }) => {
-            console.log("REDDIT MOMENT");
             const { region_id } = args;
             const userId = new ObjectId(req.userId);
             const regionId = new ObjectId(region_id);
@@ -121,10 +160,108 @@ module.exports = {
                     maps[i].index++;
                 }
             }
-            console.log(maps);
             const updateMaps = await Region.updateMany({userID: userId, parentRegion: null}, {$inc:{'index': 1}});
             const updateTopMap = await Region.updateOne({userID: userId, parentRegion: null, _id: regionId}, {$set:{'index': 0}});
             return true;
+        },
+        sortCol: async (_, args) => {
+            const { region_id, field, sortAsc} = args;
+            const regionId = new ObjectId(region_id);
+            const region = await Region.findOne({_id: regionId});
+            let subregionsIds = region.subregions;
+            let subregions = [];
+            for (let i = 0; i < subregionsIds.length; i++) {
+                let subregion = await Region.findOne({_id: subregionsIds[i]});
+                subregions.push(subregion);
+            }
+            if (field == "name") {
+                if (sortAsc) {
+                    subregions.sort((region1, region2) => {
+                        let first = region1.name;
+                        let second = region2.name;
+                        return (first < second) ? -1 : (first > second) ? 1 : 0;
+                    })
+                }
+                else {
+                    subregions.sort((region1, region2) => {
+                        let first = region1.name;
+                        let second = region2.name;
+                        return (first > second) ? -1 : (first < second) ? 1 : 0;
+                    })
+                }
+            }
+            if (field == "capital") {
+                if (sortAsc) {
+                    subregions.sort((region1, region2) => {
+                        let first = region1.capital;
+                        let second = region2.capital;
+                        return (first < second) ? -1 : (first > second) ? 1 : 0;
+                    })
+                }
+                else {
+                    subregions.sort((region1, region2) => {
+                        let first = region1.capital;
+                        let second = region2.capital;
+                        return (first > second) ? -1 : (first < second) ? 1 : 0;
+                    })
+                }
+            }
+            if (field == "leader") {
+                if (sortAsc) {
+                    subregions.sort((region1, region2) => {
+                        let first = region1.leader;
+                        let second = region2.leader;
+                        return (first < second) ? -1 : (first > second) ? 1 : 0;
+                    })
+                }
+                else {
+                    subregions.sort((region1, region2) => {
+                        let first = region1.leader;
+                        let second = region2.leader;
+                        return (first > second) ? -1 : (first < second) ? 1 : 0;
+                    })
+                }
+            }
+            const newSubregions = subregions.map((subregion) => subregion._id);
+            const values = subregions.map((subregion) => subregion[field]);
+            const updated = await Region.updateOne({_id: regionId}, { "$set" : {subregions: newSubregions}});
+            return subregionsIds;
+
+        },
+        setOrder: async (_, args) => {
+            const {region_id, order} = args;
+            const objectId = new ObjectId(region_id);
+            const updated = await Region.updateOne({_id: objectId}, { "$set" : {subregions: order}});
+            return true;
+        },
+        addLandmark: async (_, args) => {
+            const {region_id, landmark, index} = args;
+            const objectId = new ObjectId(region_id);
+            console.log(index);
+            if (index == null) {
+                const updated = await Region.updateOne({_id: objectId}, { $push: { landmarks: landmark}});
+            }
+            else {
+                const found = await Region.findOne({_id: objectId});
+                let landmarks = found.landmarks;
+                console.log(landmarks);
+                landmarks.splice(index, 0, landmark)
+                console.log(landmarks);
+                const updated = await Region.updateOne({_id: objectId}, {"$set" : {landmarks: landmarks}});
+            }
+            return landmark;
+        },
+        deleteLandmark: async (_, args) => {
+            const {region_id, value} = args;
+            const objectId = new ObjectId(region_id);
+            const updated = await Region.updateOne({_id: objectId}, { $pull: { landmarks: value}});
+            return "";
+
+        },
+        editLandmark: async (_, args) => {
+            const {region_id, prevValue, newValue} = args;
+            const objectId = new ObjectId(region_id);
+            const updated = await Region.updateOne({_id: objectId, landmarks: prevValue }, { "$set" : { "landmarks.$" : newValue}})
         }
         // 		updateTodolistField: async (_, args) => {
 // 			const { field, value, _id } = args;
