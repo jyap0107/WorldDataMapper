@@ -3,7 +3,7 @@ import { useMutation, useQuery, useLazyQuery } from '@apollo/client';
 import LandmarkEntry from './LandmarkEntry';
 import DeleteMap						from '../modals/DeleteMap.js';
 import * as mutations 					from '../../cache/mutations';
-import { GET_REGION, GET_SUBREGIONS_BY_ID, GET_LANDMARKS, GET_POSSIBLE_PARENTS }                   from '../../cache/queries';
+import { GET_REGION, GET_SUBREGIONS_BY_ID, GET_LANDMARKS, GET_POSSIBLE_PARENTS, GET_PARENT }                   from '../../cache/queries';
 import { WLHeader, WCContent, WLFooter, WLMain, WCard, WModal, WMHeader, WMMain, WMFooter, WButton, WInput, WLayout } from 'wt-frontend';
 import WCFooter from 'wt-frontend/build/components/wcard/WCFooter';
 import { Link, useParams } from 'react-router-dom';
@@ -12,16 +12,18 @@ import { AddLandmark_Transaction, DeleteLandmark_Transaction, EditLandmark_Trans
 const RegionViewer = (props) => {
 
     const { currentRegion } = useParams();
-    const { data, refetch } = useQuery(GET_REGION, {variables: {regionId: currentRegion}}, {fetchPolicy: "network-only"});
+    const { data: regionData, refetch } = useQuery( GET_REGION, {variables: {regionId: currentRegion}}, {fetchPolicy: "network-only"});
     const { data: subregions } = useQuery(GET_SUBREGIONS_BY_ID, {variables: {regionId: currentRegion}})
     const { data: landmarksData, refetch: refetchLandmarks} = useQuery(GET_LANDMARKS, {variables: {region_id: currentRegion}, fetchPolicy: 'network-only'});
     const { data: possibleParentsData, refetch: refetchParents} = useQuery(GET_POSSIBLE_PARENTS, {variables: {region_id: currentRegion}});
-    const { data: parentData } = useQuery(GET_REGION, {variables: {regionId: data.getRegion.parentRegion}, skip: data})
+    const { data: parentData, refetch: refetchParent } = useQuery( GET_PARENT, {variables: {region_id: currentRegion}});
 
     const [input, setInput] = useState("");
     const [target, setTarget] = useState({});
     const [canUndo, setUndo] = useState(false);
     const [canRedo, setRedo] = useState(false);
+    const [editingParent, setEditingParent] = useState(false);
+    const [parentName, setParentName] = useState("");
     
     const [editLandmark] = useMutation(mutations.EDIT_LANDMARK);
     const [deleteLandmark] = useMutation(mutations.DELETE_LANDMARK);
@@ -31,18 +33,23 @@ const RegionViewer = (props) => {
         console.log(landmarksData);
     }, [landmarksData])
 
-    if (data && subregions && landmarksData && possibleParentsData) {
-        console.log(possibleParentsData.getPossibleParents);
-        const region = data.getRegion;
+    if (regionData && subregions && landmarksData && possibleParentsData && parentData) {;
+        const region = regionData.getRegion;
         const landmarks = landmarksData.getLandmarks;
         const localLandmarks = region.landmarks;
         const numSubregions = subregions.getSubregionsById.length;
         const numLandmarks = landmarks.length
+        const possibleParents = possibleParentsData.getPossibleParents;
+        const parent = parentData.getParent;
 
         const updateInput = async (e) => {
             const value = e.target.value;
             setTarget(e.target);
             await setInput(value);
+        }
+        const handleParentClick = () => {
+            setEditingParent(true);
+            setParentName(parent.name);
         }
 
         const createLandmark = async () => {
@@ -100,6 +107,8 @@ const RegionViewer = (props) => {
             await refetchLandmarks();
             await refetch();
         }
+        const names = possibleParents.map((entry) => entry.name);
+        const index = names.indexOf(parent.name);
         return(
             <div>
                 <WCard className="viewer-container" raised>
@@ -119,8 +128,23 @@ const RegionViewer = (props) => {
                                 </div>
                                 <div className="detail region-name"> Region Name: {region.name}</div>
                                 <div className="detail parent-region">
-                                    <span> Parent Region: {region.parentRegion ? region.parentRegion : "No parent"}</span>
-                                    <span class="material-icons edit-parent">mode_edit</span>
+                                    <span> Parent Region: </span>
+                                    {editingParent ? 
+                                    (<select name={parentName} id={parentName} defaultValue={index}>
+                                        {/* possibleParents has 5 items in it */}
+                                        {possibleParents.map((item, index) => 
+                                            (<option key={index} value={index}>{item.name}</option>)
+                                        )}
+                                        <option>Napkin</option>
+                                        <option>9</option>
+                                    </select>) :
+                                    <>
+                                    <span>{parent.name}</span>
+                                    <span class="material-icons edit-parent" onClick={handleParentClick}>mode_edit</span>
+                                    </>
+                                }
+                                    
+                                    
                                 </div>
                                 <div className="detail region-capital"> Region Capital: {region.capital ? region.capital : "No capital"} </div>
                                 <div className="detail region Leader"> Region Leader: {region.leader ? region.leader : "No leader"}</div>
@@ -154,7 +178,10 @@ const RegionViewer = (props) => {
                         </WCContent>
                     </WLayout>
                 </WCard>
+                
             </div>
+            
+            
         )
     }
     else return(<></>);

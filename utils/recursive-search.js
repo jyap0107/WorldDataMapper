@@ -64,7 +64,7 @@ const findOtherSubregionsHelper = async (rootRegion, baseArray, baseRegion, pare
     const root = rootRegion.toString();
     const parent = parentRegion.toString();
     const base = baseRegion.toString();
-    if (root != base && root != parent) {
+    if (root != base) {
         baseArray.push(rootRegion);
         for (let i = 0; i < rootRegion.subregions.length; i++) {
             const region = await Region.findOne({_id: rootRegion.subregions[i]});

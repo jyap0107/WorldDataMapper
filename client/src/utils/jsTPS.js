@@ -25,20 +25,22 @@ export class AddSubregion_Transaction extends jsTPS_Transaction {
     }
 }
 export class DeleteSubregion_Transaction extends jsTPS_Transaction {
-    constructor(_id, doFunction, undoFunction) {
+    constructor(_id, index, doFunction, undoFunction) {
         super();
         this._id = _id;
+        this.index = index;
         this.doFunction = doFunction;
         this.undoFunction = undoFunction;
     }
     async doTransaction() {
+        console.log(this._id);
         const { data } = await this.doFunction({variables: {region_id: this._id, isMap: false}});
         this.deletedRegions = data.deleteRegion;
         this.deletedRegions = this.deletedRegions.map(({__typename, ...item}) => item);
         console.log(this.deletedRegions);
     }
     async undoTransaction() {
-        const { data } = await this.undoFunction({variables: {parentRegion: this._id, regions: this.deletedRegions}})
+        const { data } = await this.undoFunction({variables: {parentRegion: this._id, regions: this.deletedRegions, index: this.index}})
     }
 }
 export class EditSubregionField_Transaction extends jsTPS_Transaction {

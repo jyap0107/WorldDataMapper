@@ -76,6 +76,22 @@ export const GET_REGION = gql`
 		}
 	}
 `;
+export const GET_PARENT = gql`
+	query GetParent($region_id: String!) {
+		getParent(region_id: $region_id) {
+			_id
+			userID
+			name
+			parentRegion
+			capital
+			leader
+			numSubregions
+			landmarks
+			index
+			subregions
+		}
+	}
+`;
 export const GET_LANDMARKS = gql`
 	query GetLandmarks($region_id: String!) {
 		getLandmarks(region_id: $region_id)

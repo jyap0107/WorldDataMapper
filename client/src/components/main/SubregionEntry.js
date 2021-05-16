@@ -37,6 +37,10 @@ const SubregionEntry = (props) => {
             props.editSubregionField(subregion._id, "leader", prevLeader, newLeader);
         }
     }
+    const handleDeleteSubregion = () => {
+        props.setShowDeleteModal(true);
+        props.deleteSubregionId(subregion._id);
+    }
 
     
     return(

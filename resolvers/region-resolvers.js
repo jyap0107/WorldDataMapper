@@ -31,13 +31,22 @@ module.exports = {
             let subregion = await Region.findOne({_id: regionId});
             return subregion
         },
+        getParent: async (_, args) => {
+            console.log("yessir");
+            const { region_id} = args;
+            let subregion = await Region.findOne({_id: region_id});
+            const parentId = subregion.parentRegion;
+            const parentObjId = new ObjectId(parentId);
+            const parent = Region.findOne({_id: parentObjId});
+            console.log("returning");
+            return parent;
+        },
         getLandmarks: async (_, args) => {
             const {region_id} = args;
             let landmarks = await searchIds([], region_id, "landmarks");
             return landmarks;
         },
         getPossibleParents: async (_, args, { req }) => {
-            console.log("I WAS CALLED");
             const {region_id} = args;
             const _id = new ObjectId(req.userId)
             const objectId = new ObjectId(region_id);
@@ -55,8 +64,8 @@ module.exports = {
                 possibleParents.push(...possibilities);
             }
             possibleParents.flat();
-            console.log("List of possible parents: ");
-            console.log(possibleParents);
+            // console.log("List of possible parents: ");
+            // console.log(possibleParents);
             return possibleParents;
         }
     },
@@ -111,9 +120,20 @@ module.exports = {
             }
         },
         addRegions: async(_, args) => {
-            const { parentRegion, regions } = args;
+            console.log("adding multiple");
+            const { parentRegion, regions, index } = args;
             const inserted = await Region.insertMany(regions);
             const objectId = new ObjectId(parentRegion);
+            const parentObj = await Region.findOne({_id: objectId})
+            for (let i = 0; i < regions.length; i++) {
+                if (regions[i].parentRegion == parentObj.parentRegion) {
+                    const found = await Region.findOne({_id: parentObj.parentRegion})
+                    let subregions = found.subregions;
+                    subregions.splice(index, 0, regions[i]._id)
+                    console.log(subregions);
+                    const updated = await Region.updateOne({_id: parentObj.parentRegion}, { "$set" : { subregions: subregions}});
+                }
+            }
             const parent = await Region.updateOne({_id: objectId}, {$inc:{'numSubregions': 1}});
             return "yes";
         },
@@ -262,6 +282,15 @@ module.exports = {
             const {region_id, prevValue, newValue} = args;
             const objectId = new ObjectId(region_id);
             const updated = await Region.updateOne({_id: objectId, landmarks: prevValue }, { "$set" : { "landmarks.$" : newValue}})
+        },
+        changeParentRegion: async (_, args) => {
+            const {region_id, newParent} = args;
+            const objectId = new ObjectId(region_id);
+            const updated = await Region.updateOne({_id: objectId}, { "$set" : {parentRegion: newParent}});
+            const parentId = new ObjectId(region_id);
+            const updated2 = await Region.updateOne({_id: parentId}, {$pull: { subregions: region_id}});
+            return updated && updated2;
+
         }
         // 		updateTodolistField: async (_, args) => {
 // 			const { field, value, _id } = args;

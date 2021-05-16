@@ -102,8 +102,8 @@ export const ADD_REGION = gql`
 	}
 `;
 export const ADD_MULTIPLE_REGIONS = gql`
-	mutation addRegions($parentRegion: String!$regions: [RegionInput]!) {
-		addRegions(parentRegion: $parentRegion, regions: $regions)
+	mutation addRegions($parentRegion: String! $regions: [RegionInput]!, $index: Int) {
+		addRegions(parentRegion: $parentRegion, regions: $regions, index: $index)
 	}
 `
 export const DELETE_REGION = gql`
@@ -155,5 +155,10 @@ export const DELETE_LANDMARK = gql`
 export const EDIT_LANDMARK = gql`
 	mutation EditLandmarks($region_id: String!, $prevValue: String!, $newValue: String!) {
 		editLandmark(region_id: $region_id, prevValue: $prevValue, newValue: $newValue)
+	}
+`;
+export const CHANGE_PARENT_REGION = gql`
+	mutation ChangeParentRegion($region_id: String!, $newParent: String!) {
+		changeParentRegion(region_id: $region_id, newParent: $newParent)
 	}
 `;

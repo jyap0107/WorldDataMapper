@@ -26,6 +26,8 @@ const RegionSpreadsheet = (props) => {
     const [nameAsc, setNameAsc] = useState(false);
     const [capitalAsc, setCapitalAsc] = useState(false);
     const [leaderAsc, setLeaderAsc] = useState(false);
+    const [showDeleteModal, setShowDeleteModal] = useState(false);
+    const [deleteRegionId, setDeleteRegionId] = useState("");
 
     const { currentRegion } = useParams();
     const [getSubregions, {loading, data, refetch}] = useLazyQuery(GET_SUBREGIONS_BY_ID);
@@ -38,7 +40,7 @@ const RegionSpreadsheet = (props) => {
         }, [getSubregions, currentRegion])
 
     const regionViewer = `/${currentRegion}/view`
-    if (data && regionData) {
+    if (data && regionData && regionData.data) {
         let tps = props.tps;
         let name = regionData.data.getRegion.name;
         const subregions = data.getSubregionsById;
@@ -66,8 +68,8 @@ const RegionSpreadsheet = (props) => {
             await redo();
         }
         
-        const deleteSubregion = async (_id) => {
-            let transaction = new DeleteSubregion_Transaction(_id, DeleteSubregion, AddMultipleRegions);
+        const deleteSubregion = async (_id, index) => {
+            let transaction = new DeleteSubregion_Transaction(_id, index, DeleteSubregion, AddMultipleRegions);
             props.tps.addTransaction(transaction);
             await redo();
             await refetch();
@@ -170,12 +172,17 @@ const RegionSpreadsheet = (props) => {
                                     deleteSubregion={deleteSubregion}
                                     editSubregionField={editSubregionField}
                                     tps={tps}
+                                    setShowDeleteModal={setShowDeleteModal}
+                                    setDeleteRegionId={setDeleteRegionId}
                                     />)}
                                 </WCContent>
                             </WLayout>
                         </WCContent>
                     </WLayout>
                 </WCard>
+                {
+                    showDeleteModal && (<DeleteSubregion showDeleteModal={showDeleteModal} setShowDeleteModal={setShowDeleteModal} deleteSubregion={deleteSubregion}/>)
+                }
             </div>
             
         );
