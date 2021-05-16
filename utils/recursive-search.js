@@ -71,7 +71,20 @@ const findOtherSubregionsHelper = async (rootRegion, baseArray, baseRegion, pare
             await findOtherSubregionsHelper(region, baseArray, baseRegion, parentRegion);
         }
     }
-
+}
+const numSubregions = async (rootRegion) => {
+    let currNum = 0;
+    await numSubregionsHelper(rootRegion, currNum);
+    return currNum;
+}
+const numSubregionsHelper = async (rootRegion, currNum) => {
+    const objectId = new ObjectId(rootRegion);
+    const region = Region.findOne({_id: rootRegion});
+    currNum++;
+    const subregions = region.subregions;
+    for (let i = 0; i < subregions.length; i++) {
+        numSubregionsHelper(subregions[i], currNum);
+    }
 }
 
-module.exports = {searchIds, findOtherSubregions};
+module.exports = {searchIds, findOtherSubregions, numSubregions};

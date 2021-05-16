@@ -1,6 +1,6 @@
 const ObjectId = require('mongoose').Types.ObjectId;
 const Region = require('../models/region-model');
-const { searchIds, findOtherSubregions } = require('../utils/recursive-search');
+const { searchIds, findOtherSubregions, numSubregions } = require('../utils/recursive-search');
 
 module.exports = {
     Query: {
@@ -67,6 +67,12 @@ module.exports = {
             // console.log("List of possible parents: ");
             // console.log(possibleParents);
             return possibleParents;
+        },
+        getSiblingRegions: async  (_, args) => {
+            const {region_id} = args;
+            const _id = new ObjectId(region_id);
+            const parent = await Region.findOne({_i: objectId});
+            return parent.subregions;
         }
     },
     Mutation: {
@@ -286,10 +292,18 @@ module.exports = {
         changeParentRegion: async (_, args) => {
             const {region_id, newParent} = args;
             const objectId = new ObjectId(region_id);
+            // Set region_id's parent to newParent
             const updated = await Region.updateOne({_id: objectId}, { "$set" : {parentRegion: newParent}});
-            const parentId = new ObjectId(region_id);
+            const region = await Region.findOne({_id: objectId});
+            // Using region, get it,  then get its parentRegion, turn into objectId, find update it.
+            const parent = region.parentRegion;
+            const parentId = new ObjectId(parent);
+            // Pull region_id as a subregion from its parent.
             const updated2 = await Region.updateOne({_id: parentId}, {$pull: { subregions: region_id}});
-            return updated && updated2;
+            // Lastly, find the newParent and add to its list of subregions
+            const parentObjId = new ObjectId(newParent);
+            const updated3 = await Region.updateOne({_id: parentObjId}, { $push: { subregions: region_id}})
+            return true;
 
         }
         // 		updateTodolistField: async (_, args) => {

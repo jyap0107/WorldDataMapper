@@ -6,8 +6,8 @@ import * as mutations 					from '../../cache/mutations';
 import { GET_REGION, GET_SUBREGIONS_BY_ID, GET_LANDMARKS, GET_POSSIBLE_PARENTS, GET_PARENT }                   from '../../cache/queries';
 import { WLHeader, WCContent, WLFooter, WLMain, WCard, WModal, WMHeader, WMMain, WMFooter, WButton, WInput, WLayout } from 'wt-frontend';
 import WCFooter from 'wt-frontend/build/components/wcard/WCFooter';
-import { Link, useParams } from 'react-router-dom';
-import { AddLandmark_Transaction, DeleteLandmark_Transaction, EditLandmark_Transaction} from '../../utils/jsTPS'
+import { Link, useParams, useLocation } from 'react-router-dom';
+import { AddLandmark_Transaction, DeleteLandmark_Transaction, EditLandmark_Transaction, ChangeParentRegion_Transaction} from '../../utils/jsTPS'
 
 const RegionViewer = (props) => {
 
@@ -16,7 +16,7 @@ const RegionViewer = (props) => {
     const { data: subregions } = useQuery(GET_SUBREGIONS_BY_ID, {variables: {regionId: currentRegion}})
     const { data: landmarksData, refetch: refetchLandmarks} = useQuery(GET_LANDMARKS, {variables: {region_id: currentRegion}, fetchPolicy: 'network-only'});
     const { data: possibleParentsData, refetch: refetchParents} = useQuery(GET_POSSIBLE_PARENTS, {variables: {region_id: currentRegion}});
-    const { data: parentData, refetch: refetchParent } = useQuery( GET_PARENT, {variables: {region_id: currentRegion}});
+    const { data: parentData, refetch: refetchParent } = useQuery( GET_PARENT, {variables: {region_id: currentRegion}}, {fetchPolicy: "cache-and-network"});
 
     const [input, setInput] = useState("");
     const [target, setTarget] = useState({});
@@ -28,11 +28,11 @@ const RegionViewer = (props) => {
     const [editLandmark] = useMutation(mutations.EDIT_LANDMARK);
     const [deleteLandmark] = useMutation(mutations.DELETE_LANDMARK);
     const [addLandmark] = useMutation(mutations.ADD_LANDMARK)
-    
-    useEffect(() => {
-        console.log(landmarksData);
-    }, [landmarksData])
+    const [changeParentRegion] = useMutation(mutations.CHANGE_PARENT_REGION);
 
+
+    console.log(useLocation());
+    useEffect(() => props.setCurrentRegion(currentRegion))
     if (regionData && subregions && landmarksData && possibleParentsData && parentData) {;
         const region = regionData.getRegion;
         const landmarks = landmarksData.getLandmarks;
@@ -47,9 +47,9 @@ const RegionViewer = (props) => {
             setTarget(e.target);
             await setInput(value);
         }
-        const handleParentClick = () => {
-            setEditingParent(true);
-            setParentName(parent.name);
+        const toggleParentOptions = () => {
+            setEditingParent(!editingParent);
+            console.log("toggle");
         }
 
         const createLandmark = async () => {
@@ -82,6 +82,17 @@ const RegionViewer = (props) => {
             props.tps.addTransaction(transaction);
             await redo();
         }
+        const handleParentChange = async (e) => {
+            const value = e.target.value;
+            console.log(value);
+            // const { data: changedParent} = await changeParentRegion({variables: {region_id: currentRegion, newParent: value}});
+            const transaction = new ChangeParentRegion_Transaction(currentRegion, parent._id, value, changeParentRegion);
+            props.tps.addTransaction(transaction);
+            await redo();
+            setEditingParent(false);
+            await refetchParent();
+            
+        }
         const undo = async () => {
             await props.tps.undoTransaction();
             setRedo(true);
@@ -93,6 +104,7 @@ const RegionViewer = (props) => {
             }
             await refetchLandmarks();
             await refetch();
+            await refetchParent();
         }
         const redo = async () => {
             console.log("can?");
@@ -106,8 +118,9 @@ const RegionViewer = (props) => {
             }
             await refetchLandmarks();
             await refetch();
+            await refetchParent();
         }
-        const names = possibleParents.map((entry) => entry.name);
+        const names = possibleParents.map((entry) => entry._id);
         const index = names.indexOf(parent.name);
         return(
             <div>
@@ -130,17 +143,17 @@ const RegionViewer = (props) => {
                                 <div className="detail parent-region">
                                     <span> Parent Region: </span>
                                     {editingParent ? 
-                                    (<select name={parentName} id={parentName} defaultValue={index}>
+                                    (<select className="parent-select" autoFocus name={parentName} id={parentName} defaultValue={parent._id} onChange={handleParentChange} onBlur={toggleParentOptions}>
                                         {/* possibleParents has 5 items in it */}
                                         {possibleParents.map((item, index) => 
-                                            (<option key={index} value={index}>{item.name}</option>)
+                                            (<option className="parent-option" key={index.name} value={item._id}>{item.name}</option>)
                                         )}
                                         <option>Napkin</option>
                                         <option>9</option>
                                     </select>) :
                                     <>
                                     <span>{parent.name}</span>
-                                    <span class="material-icons edit-parent" onClick={handleParentClick}>mode_edit</span>
+                                    <span class="material-icons edit-parent" onClick={toggleParentOptions}>mode_edit</span>
                                     </>
                                 }
                                     
@@ -148,7 +161,7 @@ const RegionViewer = (props) => {
                                 </div>
                                 <div className="detail region-capital"> Region Capital: {region.capital ? region.capital : "No capital"} </div>
                                 <div className="detail region Leader"> Region Leader: {region.leader ? region.leader : "No leader"}</div>
-                                <div className="detail #-of-subregions"># of Subregions: {numLandmarks}</div>
+                                <div className="detail #-of-subregions"># of Subregions: {region.subregions.length}</div>
                             </div>
                         </WCContent>
                         <WCContent className="landmarks-container testing">

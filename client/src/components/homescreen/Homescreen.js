@@ -216,6 +216,11 @@ const Homescreen = (props) => {
 						</WNavItem>
 					</ul>
 					<ul>
+						<WNavItem>
+							{currentRegion}
+						</WNavItem>
+					</ul>
+					<ul>
 						<NavbarOptions
 							fetchUser={props.fetchUser} auth={auth}
 							user={props.user} 
@@ -275,6 +280,7 @@ const Homescreen = (props) => {
 							maps={maps}
 							key={currentRegion}
 							tps={props.tps}
+							setCurrentRegion={setCurrentRegion}
 							/>}
 						/>}
 						<Route exact path="/"> {auth ? <Redirect to="/maps"></Redirect> : <Redirect to="/welcome"></Redirect>}</Route>

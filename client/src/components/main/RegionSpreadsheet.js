@@ -5,7 +5,7 @@ import DeleteMap						from '../modals/DeleteMap.js';
 import * as mutations 					from '../../cache/mutations';
 import { WLHeader, WCContent, WLFooter, WLMain, WCard, WModal, WMHeader, WGrid, WRow, WCol, WLayout } from 'wt-frontend';
 import WCFooter from 'wt-frontend/build/components/wcard/WCFooter';
-import { Link, useParams } from 'react-router-dom';
+import { Link, useParams} from 'react-router-dom';
 import RegionViewer from './RegionViewer';
 import SubregionEntry from './SubregionEntry';
 import { GET_SUBREGIONS_BY_ID }             from '../../cache/queries';
@@ -14,6 +14,7 @@ import { AddSubregion_Transaction, DeleteSubregion_Transaction, EditSubregionFie
 
 const RegionSpreadsheet = (props) => {
 
+    const { currentRegion } = useParams();
     const [AddRegion] = useMutation(mutations.ADD_REGION);
     const [DeleteSubregion] = useMutation(mutations.DELETE_REGION);
     const [AddMultipleRegions] = useMutation(mutations.ADD_MULTIPLE_REGIONS);
@@ -29,14 +30,15 @@ const RegionSpreadsheet = (props) => {
     const [showDeleteModal, setShowDeleteModal] = useState(false);
     const [deleteRegionId, setDeleteRegionId] = useState("");
 
-    const { currentRegion } = useParams();
+
     const [getSubregions, {loading, data, refetch}] = useLazyQuery(GET_SUBREGIONS_BY_ID);
     const regionData = useQuery(GET_REGION, {variables: {regionId: currentRegion}});
+    // const {loading, data, refetch} = useQuery(GET_SUBREGIONS_BY_ID, {variables: {regionId: currentRegion}}, {fetchPolicy: 'cache-and-network'});
     
 
 
     useEffect(() => {
-            getSubregions({variables: {regionId: currentRegion}});
+            getSubregions({variables: {regionId: currentRegion}}, {fetchPolicy: 'cache-and-network'});
         }, [getSubregions, currentRegion])
 
     const regionViewer = `/${currentRegion}/view`
@@ -44,7 +46,10 @@ const RegionSpreadsheet = (props) => {
         let tps = props.tps;
         let name = regionData.data.getRegion.name;
         const subregions = data.getSubregionsById;
-
+        const linkTo = {
+            pathname: `/${currentRegion}/view`,
+            subregions: {subregions}
+        };
         const createNewSubregion = async () => {
 
             const length = subregions ? subregions.length : 0;
@@ -125,6 +130,7 @@ const RegionSpreadsheet = (props) => {
             }
             await refetch();
         }
+        console.log(subregions);
         return(
             <div>
                 <WCard className="region-spreadsheet-container">
@@ -142,7 +148,7 @@ const RegionSpreadsheet = (props) => {
                             }
                             
                             <span className="regions-header-text">Region:&nbsp; 
-                            <Link className="region-link" to={regionViewer} style={{ color: '#205b9e'}}>{name}</Link></span>
+                            <Link className="region-link" to={{pathname: `/${currentRegion}/view`, state: {subregions: subregions}}} style={{ color: '#205b9e'}}>{name}</Link></span>
                         </div>
                         <WCContent>
                             <WLayout wLayout="header-content">

@@ -123,6 +123,22 @@ export class EditLandmark_Transaction extends jsTPS_Transaction {
         const { data } = await this.undoFunction({variables: {region_id: this._id, prevValue: this.newValue, newValue: this.prevValue}})
     }
 }
+export class ChangeParentRegion_Transaction extends jsTPS_Transaction {
+    constructor(_id, oldParent, newParent, doFunction) {
+        super();
+        this._id = _id;
+        this.oldParent = oldParent;
+        this.newParent = newParent;
+        this.doFunction = doFunction;
+        this.undoFunction = doFunction;
+    }
+    async doTransaction() {
+        const {data} = await this.doFunction({variables: {region_id: this._id, newParent: this.newParent}});
+    }
+    async undoTransaction() {
+        const {data} = await this.undoFunction({variables: {region_id: this._id, newParent: this.oldParent}});
+    }
+}
 
 
 
