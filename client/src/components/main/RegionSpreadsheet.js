@@ -115,7 +115,16 @@ const RegionSpreadsheet = (props) => {
         }
         
         const deleteSubregion = async () => {
-            let transaction = new DeleteSubregion_Transaction(subregionToDelete._id, subregionToDelete.index, DeleteSubregion, AddMultipleRegions);
+            let index = 0;
+            for (let i = 0; i < subregions.length; i++) {
+                if (subregions[i]._id == subregionToDelete._id) {
+                    index = i;
+                }
+            }
+            console.log(subregions);
+            console.log(subregionToDelete._id);
+            console.log(index);
+            let transaction = new DeleteSubregion_Transaction(subregionToDelete._id, index, DeleteSubregion, AddMultipleRegions);
             props.tps.addTransaction(transaction);
             await redo();
             await refetch();
