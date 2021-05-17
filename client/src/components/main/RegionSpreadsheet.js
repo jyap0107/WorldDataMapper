@@ -10,6 +10,7 @@ import RegionViewer from './RegionViewer';
 import SubregionEntry from './SubregionEntry';
 import { GET_SUBREGIONS_BY_ID }             from '../../cache/queries';
 import { GET_REGION }                  from '../../cache/queries';
+import DeleteSubregionModal from '../modals/DeleteSubregionModal.js'
 import { AddSubregion_Transaction, DeleteSubregion_Transaction, EditSubregionField_Transaction, SortCol_Transaction } from '../../utils/jsTPS'
 
 const RegionSpreadsheet = (props) => {
@@ -27,8 +28,8 @@ const RegionSpreadsheet = (props) => {
     const [nameAsc, setNameAsc] = useState(false);
     const [capitalAsc, setCapitalAsc] = useState(false);
     const [leaderAsc, setLeaderAsc] = useState(false);
-    const [showDeleteModal, setShowDeleteModal] = useState(false);
-    const [deleteRegionId, setDeleteRegionId] = useState("");
+    const [showDelete, setShowDelete] = useState(false);
+    const [subregionToDelete, setSubregionToDelete] = useState({});
 
 
     const [getSubregions, {loading, data, refetch}] = useLazyQuery(GET_SUBREGIONS_BY_ID);
@@ -40,8 +41,9 @@ const RegionSpreadsheet = (props) => {
     useEffect(() => {
             getSubregions({variables: {regionId: currentRegion}}, {fetchPolicy: 'cache-and-network'});
             props.setCurrentRegion(currentRegion);
+            props.tps.clearAllTransactions();
         }, [getSubregions, currentRegion, props.setCurrentRegion])
-
+    
     const regionViewer = `/${currentRegion}/view`
     if (data && regionData && regionData.data) {
         let tps = props.tps;
@@ -109,6 +111,10 @@ const RegionSpreadsheet = (props) => {
             props.tps.addTransaction(transaction);
             await redo();
             await refetch();
+        }
+        const handleShowDelete = () => {
+            setShowDelete(!showDelete);
+            console.log(showDelete);
         }
         const undo = async () => {
             await props.tps.undoTransaction();
@@ -184,8 +190,10 @@ const RegionSpreadsheet = (props) => {
                                     deleteSubregion={deleteSubregion}
                                     editSubregionField={editSubregionField}
                                     tps={tps}
-                                    setShowDeleteModal={setShowDeleteModal}
-                                    setDeleteRegionId={setDeleteRegionId}
+                                    showDelete={showDelete}
+                                    setShowDelete={setShowDelete}
+                                    handleShowDelete={handleShowDelete}
+                                    setSubregionToDelete={setSubregionToDelete}
                                     />)}
                                 </WCContent>
                             </WLayout>
@@ -193,7 +201,7 @@ const RegionSpreadsheet = (props) => {
                     </WLayout>
                 </WCard>
                 {
-                    showDeleteModal && (<DeleteSubregion showDeleteModal={showDeleteModal} setShowDeleteModal={setShowDeleteModal} deleteSubregion={deleteSubregion}/>)
+                    showDelete && (<DeleteSubregionModal showDelete={showDelete} setShowDelete={setShowDelete} deleteSubregion={deleteSubregion}/>)
                 }
             </div>
             

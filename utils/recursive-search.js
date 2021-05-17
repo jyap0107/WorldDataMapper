@@ -37,25 +37,6 @@ const landmarkSearchHelper = async (baseArray, rootID) => {
     }
 }
 
-// const findOtherSubregionsFromMaps = async (maps, baseArray, baseRegion) => {
-//     let temp = await Region.findOne({_id: baseRegion});
-//     const parent = temp.parentRegion;
-//     // Look through all maps
-//     for (let i = 0; i < maps.length; i++) {
-//         // Look through each maps' subregions
-//         for (let j = 0; j < maps[i].subregions.length; i++) {
-//             const subregion = maps[i].subregions[j];
-//             // If the subregion ID doesnt match parent or baseRegion, then we can find it and add it.
-//             // Then also use that region to search further.
-//             if (subregion != baseRegion && subregion != parent) {
-//                 const region = await Region.findOne({_id: subregion});
-//                 baseArray.push(region);
-//                 await findOtherSubregionsFromRegion(region, baseArray, baseRegion, parent);
-//             }
-//         }
-//     }
-//     return baseArray;
-// }
 const findOtherSubregions = async (rootRegion, baseArray, baseRegion, parent) => {
     await findOtherSubregionsHelper(rootRegion, baseArray, baseRegion, parent);
     return baseArray;

@@ -640,12 +640,14 @@ label {
     font-size: 30pt;
     margin-left: 12px;
     border-radius: 5px;
+    border-bottom: -10px;
 }
 .redo-viewer {
     color:white;
     font-size: 30pt;
     margin-left: 3px;
     border-radius: 5px;
+    border-bottom: -10px;
 }
 .parent-select {
     font-size: 15pt;
@@ -659,4 +661,30 @@ label {
     display: flex;
     flex-direction: row;
     white-space: nowrap;
+}
+.sibling-navigation {
+    display: flex;
+    flex-direction: row;
+}
+.viewer-flag {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    padding-bottom: -30px;
+}
+.viewer-details {
+    border-top: white dotted;
+}
+.flag {
+    size: 80%;
+}
+.viewer-controls {
+    margin-bottom: -10px;
+}.spreadsheet-flag {
+    max-height: 30px;
+    max-width: 60px
+}
+
+.spreadsheet-landmarks:hover {
+    cursor: pointer;
 }

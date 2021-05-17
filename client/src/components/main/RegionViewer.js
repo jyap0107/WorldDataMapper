@@ -3,7 +3,7 @@ import { useMutation, useQuery, useLazyQuery } from '@apollo/client';
 import LandmarkEntry from './LandmarkEntry';
 import DeleteMap						from '../modals/DeleteMap.js';
 import * as mutations 					from '../../cache/mutations';
-import { GET_REGION, GET_SUBREGIONS_BY_ID, GET_LANDMARKS, GET_POSSIBLE_PARENTS, GET_PARENT }                   from '../../cache/queries';
+import { GET_REGION, GET_SUBREGIONS_BY_ID, GET_LANDMARKS, GET_POSSIBLE_PARENTS, GET_PARENT, GET_REGION_PATH }                   from '../../cache/queries';
 import { WLHeader, WCContent, WLFooter, WLMain, WCard, WModal, WMHeader, WMMain, WMFooter, WButton, WInput, WLayout } from 'wt-frontend';
 import WCFooter from 'wt-frontend/build/components/wcard/WCFooter';
 import { Link, useParams, useLocation } from 'react-router-dom';
@@ -17,6 +17,7 @@ const RegionViewer = (props) => {
     const { data: landmarksData, refetch: refetchLandmarks} = useQuery(GET_LANDMARKS, {variables: {region_id: currentRegion}, fetchPolicy: 'network-only'});
     const { data: possibleParentsData, refetch: refetchParents} = useQuery(GET_POSSIBLE_PARENTS, {variables: {region_id: currentRegion}});
     const { data: parentData, refetch: refetchParent } = useQuery( GET_PARENT, {variables: {region_id: currentRegion}}, {fetchPolicy: "cache-and-network"});
+    const { data: regionPathData } = useQuery(GET_REGION_PATH, {variables: {region_id: currentRegion}})
 
     const [input, setInput] = useState("");
     const [target, setTarget] = useState({});
@@ -32,13 +33,14 @@ const RegionViewer = (props) => {
 
     useEffect(() => {
         props.setCurrentRegion(currentRegion);
-        props.setIsViewer(true);})
+        props.setIsViewer(true);
+        props.tps.clearAllTransactions()})
     useEffect(() => {
         return () => {
             props.setIsViewer(false);
         }
     })
-    if (regionData && subregions && landmarksData && possibleParentsData && parentData) {;
+    if (regionData && subregions && landmarksData && possibleParentsData && parentData && regionPathData) {;
         const region = regionData.getRegion;
         const landmarks = landmarksData.getLandmarks;
         const localLandmarks = region.landmarks;
@@ -46,6 +48,11 @@ const RegionViewer = (props) => {
         const numLandmarks = landmarks.length
         const possibleParents = possibleParentsData.getPossibleParents;
         const parent = parentData.getParent;
+
+        const path = regionPathData.getRegionPath;
+        let pathName = path.map((entry) => entry.name).join("/");
+        pathName = "/" + pathName + "/" + region.name + " Flag.png";
+        console.log(pathName);
 
         const updateInput = async (e) => {
             const value = e.target.value;
@@ -132,9 +139,11 @@ const RegionViewer = (props) => {
                 <WCard className="viewer-container" raised>
                     <WLayout wLayout="header-content" className="viewer-content">
                         <WCContent className="viewer-info">
-                            <div className="viewer-flag"></div>
+                            <div className="viewer-flag">
+                                <img src={pathName} className = "flag" alt="No flag" style={{color: "#FFF"} }></img>
+                            </div>
                             <div className="viewer-details">
-                                <div>
+                                <div className="viewer-controls">
                                     {canUndo ? 
                                         <span class={"material-icons undo-viewer"} onClick={undo}>undo</span> :
                                         <span class={"material-icons undo-viewer disabled-button"}>undo</span>
@@ -149,12 +158,9 @@ const RegionViewer = (props) => {
                                     <span> Parent Region: </span>
                                     {editingParent ? 
                                     (<select className="parent-select" autoFocus name={parentName} id={parentName} defaultValue={parent._id} onChange={handleParentChange} onBlur={toggleParentOptions}>
-                                        {/* possibleParents has 5 items in it */}
                                         {possibleParents.map((item, index) => 
                                             (<option className="parent-option" key={index.name} value={item._id}>{item.name}</option>)
                                         )}
-                                        <option>Napkin</option>
-                                        <option>9</option>
                                     </select>) :
                                     <>
                                     <Link to={`/${parent._id}/subregions`} className="parent-link" style={{ color: '#205b9e', textDecoration: 'none'}}><span>{parent.name}</span></Link>

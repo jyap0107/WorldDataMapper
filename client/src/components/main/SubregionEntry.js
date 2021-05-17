@@ -1,6 +1,8 @@
 import React, { useState } from 'react';
 import { WButton, WInput, WRow, WCol } from 'wt-frontend';
 import { Link, useHistory } from 'react-router-dom'
+import { GET_REGION_PATH} from '../../cache/queries';
+import {useQuery} from '@apollo/client';
 
 const SubregionEntry = (props) => {
 
@@ -12,6 +14,8 @@ const SubregionEntry = (props) => {
 
     const subregion = props.subregion;
     const link = `/${subregion._id}/subregions`;
+
+    const {data} = useQuery(GET_REGION_PATH, {variables: {region_id: subregion._id}})
 
     const handleNameEdit = (e) => {
         toggleNameEdit(false);
@@ -38,15 +42,25 @@ const SubregionEntry = (props) => {
         }
     }
     const handleDeleteSubregion = () => {
-        props.setShowDeleteModal(true);
-        props.deleteSubregionId(subregion._id);
+        props.handleShowDelete();
+        props.setShowDelete(true);
+        props.setSubregionToDelete(subregion);
     }
-
+    console.log(data);
+    let path;
+    if (data) {
+        path = data.getRegionPath.map((entry) => entry.name).join("/");
+        path = "/" + path + "/" + subregion.name + " Flag.png";
+        console.log(path);
+    }
+    const landmarkClick = () => {
+        history.push(`/${subregion._id}/view`)
+    }
     
     return(
         <div>
             <WRow className="spreadsheet-content">
-                <span class="material-icons delete-subregion-button" onClick={(e) => props.deleteSubregion(subregion._id, subregion.index)}>delete</span>
+                <span class="material-icons delete-subregion-button" onClick={handleDeleteSubregion}>delete</span>
                 <WCol size="2" className="col name-col">
                     {editingName ?
                         <input className='spreadsheet-input' autoFocus={true} defaultValue={subregion.name}
@@ -71,13 +85,15 @@ const SubregionEntry = (props) => {
                     }
                 </WCol>
                 <WCol size="1" className="col flag-col">
-                    {subregion.flag}
+                    {path ? 
+                        <img className="spreadsheet-flag" src={path} alt="No flag"></img> : <span>No Flag</span>
+                }
                 </WCol>
-                <Link to={`/${subregion._id}/view`}>
-                <WCol size="4" className="col landmarks-col">
+                
+                <WCol size="4" className="col landmarks-col spreadsheet-landmarks" onClick={landmarkClick}>
                     {subregion.landmarks.map((landmark, index) => index != subregion.landmarks.length-1 ? `${landmark}, ` : `${landmark}`)}
                 </WCol>
-                </Link>
+                
         </WRow>
         </div>
     );

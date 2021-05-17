@@ -2,13 +2,13 @@ import React from 'react';
 
 import { WMFooter, WModal, WMHeader, WMMain, WButton } from 'wt-frontend';
 
-const DeleteSubregion = (props) => {
+const DeleteSubregionModal = (props) => {
     const handleClick = (e) => {
         props.deleteSubregion();
-        props.setShowDeleteModal();
+        props.setShowDelete();
     }
     return (
-        <WModal className="delete-map-modal" visible={props.showDeleteModal} animation="slide-fade-top" cover={true}>
+        <WModal className="delete-map-modal" visible={props.showDelete} animation="slide-fade-top" cover={true}>
             <WMHeader className="delete-map-header">
                 Delete Subregion?
             </WMHeader>
@@ -17,7 +17,7 @@ const DeleteSubregion = (props) => {
                 <WButton className="button-type-delete" onClick={handleClick} clickAnimation="ripple-dark">
                     Confirm
                 </WButton>
-                <WButton className="button-type-delete" onClick={props.setShowDeleteModal} clickAnimation="ripple-dark">
+                <WButton className="button-type-delete" onClick={props.setShowDelete} clickAnimation="ripple-dark">
                     Cancel
                 </WButton>
             </WMFooter>
@@ -25,4 +25,4 @@ const DeleteSubregion = (props) => {
     );
 }
 
-export default DeleteSubregion;
+export default DeleteSubregionModal;
