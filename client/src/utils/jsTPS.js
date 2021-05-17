@@ -13,6 +13,7 @@ export class AddSubregion_Transaction extends jsTPS_Transaction {
         this.isMap = isMap
     }
     async doTransaction() {
+
         const { data } = await this.doFunction({variables: { region: this.region, index: this.index, isMap: this.isMap }})
         if (data) {
             console.log(data.addRegion);
@@ -339,6 +340,7 @@ export class jsTPS {
             let transaction = this.transactions[this.mostRecentTransaction+1];
 			retVal = await transaction.doTransaction();
 			this.mostRecentTransaction++;
+            console.log(this.mostRecentTransaction);
 			this.performingDo = false;
             
         }

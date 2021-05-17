@@ -3,7 +3,7 @@ import { useMutation, useQuery, useLazyQuery } from '@apollo/client';
 import LandmarkEntry from './LandmarkEntry';
 import DeleteMap						from '../modals/DeleteMap.js';
 import * as mutations 					from '../../cache/mutations';
-import { GET_REGION, GET_SUBREGIONS_BY_ID, GET_LANDMARKS, GET_POSSIBLE_PARENTS, GET_PARENT, GET_REGION_PATH }                   from '../../cache/queries';
+import { GET_REGION, GET_SUBREGIONS_BY_ID, GET_LANDMARKS, GET_POSSIBLE_PARENTS, GET_PARENT, GET_REGION_PATH, GET_ALL_LANDMARKS }                   from '../../cache/queries';
 import { WLHeader, WCContent, WLFooter, WLMain, WCard, WModal, WMHeader, WMMain, WMFooter, WButton, WInput, WLayout } from 'wt-frontend';
 import WCFooter from 'wt-frontend/build/components/wcard/WCFooter';
 import { Link, useParams, useLocation } from 'react-router-dom';
@@ -18,6 +18,7 @@ const RegionViewer = (props) => {
     const { data: possibleParentsData, refetch: refetchParents} = useQuery(GET_POSSIBLE_PARENTS, {variables: {region_id: currentRegion}});
     const { data: parentData, refetch: refetchParent } = useQuery( GET_PARENT, {variables: {region_id: currentRegion}}, {fetchPolicy: "cache-and-network"});
     const { data: regionPathData } = useQuery(GET_REGION_PATH, {variables: {region_id: currentRegion}})
+    const { data: allLandmarksData, error } = useQuery(GET_ALL_LANDMARKS, {fetchPolicy: 'cache-and-network'});
 
     const [input, setInput] = useState("");
     const [target, setTarget] = useState({});
@@ -40,7 +41,48 @@ const RegionViewer = (props) => {
             props.setIsViewer(false);
         }
     })
-    if (regionData && subregions && landmarksData && possibleParentsData && parentData && regionPathData) {;
+    useEffect(() => {
+        document.addEventListener("keydown", handleKeyPress);
+        return () => document.removeEventListener("keydown", handleKeyPress);
+    })
+    const undo = async () => {
+        await props.tps.undoTransaction();
+        setRedo(true);
+        if (props.tps.hasTransactionToUndo()) {
+            setUndo(true);
+        }
+        else {
+            setUndo(false);
+        }
+        await refetchLandmarks();
+        await refetch();
+        await refetchParent();
+    }
+    const redo = async () => {
+        console.log(props.tps.getRedoSize());
+        await props.tps.doTransaction();
+        console.log(props.tps.getRedoSize());
+        setUndo(true);
+        if (props.tps.hasTransactionToRedo()) {
+            setRedo(true);
+        }
+        else {
+            setRedo(false);
+        }
+        await refetchLandmarks();
+        await refetch();
+        await refetchParent();
+    }
+    const handleKeyPress = async (event) => {
+        if (event.ctrlKey && event.key == "z") {
+            await undo();
+          }
+          if (event.ctrlKey && event.key == "y") {
+            await redo();
+          }
+    }
+
+    if (regionData && subregions && landmarksData && possibleParentsData && parentData && regionPathData && allLandmarksData) {;
         const region = regionData.getRegion;
         const landmarks = landmarksData.getLandmarks;
         const localLandmarks = region.landmarks;
@@ -49,10 +91,11 @@ const RegionViewer = (props) => {
         const possibleParents = possibleParentsData.getPossibleParents;
         const parent = parentData.getParent;
 
+        const allLandmarks = allLandmarksData.getAllLandmarks;
+
         const path = regionPathData.getRegionPath;
         let pathName = path.map((entry) => entry.name).join("/");
         pathName = "/" + pathName + "/" + region.name + " Flag.png";
-        console.log(pathName);
 
         const updateInput = async (e) => {
             const value = e.target.value;
@@ -68,13 +111,15 @@ const RegionViewer = (props) => {
             if (input == "") {
                 alert("Please enter a landmark.");
             }
-            else if (landmarks.includes(input)) {
+            else if (allLandmarks.includes(input)) {
                 alert("You may not include duplicate landmarks. Please enter another landmark.")
             }
             else {
                 const transaction = new AddLandmark_Transaction(currentRegion, input, addLandmark, deleteLandmark);
+                console.log(props.tps.getSize());
                 props.tps.addTransaction(transaction);
-                await redo();
+                console.log(props.tps.getSize());
+                await props.tps.doTransaction
             }
             target.value = "";
             setInput("");
@@ -105,33 +150,7 @@ const RegionViewer = (props) => {
             await refetchParent();
             
         }
-        const undo = async () => {
-            await props.tps.undoTransaction();
-            setRedo(true);
-            if (props.tps.hasTransactionToUndo()) {
-                setUndo(true);
-            }
-            else {
-                setUndo(false);
-            }
-            await refetchLandmarks();
-            await refetch();
-            await refetchParent();
-        }
-        const redo = async () => {
-            console.log("can?");
-            await props.tps.doTransaction();
-            setUndo(true);
-            if (props.tps.hasTransactionToRedo()) {
-                setRedo(true);
-            }
-            else {
-                setRedo(false);
-            }
-            await refetchLandmarks();
-            await refetch();
-            await refetchParent();
-        }
+        
         const names = possibleParents.map((entry) => entry._id);
         const index = names.indexOf(parent.name);
         return(

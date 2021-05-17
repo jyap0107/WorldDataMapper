@@ -1,6 +1,6 @@
 const ObjectId = require('mongoose').Types.ObjectId;
 const Region = require('../models/region-model');
-const { searchIds, findOtherSubregions, regionPath } = require('../utils/recursive-search');
+const { searchIds, findOtherSubregions, regionPath, findLandmarks} = require('../utils/recursive-search');
 
 module.exports = {
     Query: {
@@ -85,6 +85,18 @@ module.exports = {
                 const path = await regionPath(region.parentRegion);
                 return path;
             }
+        },
+        getAllLandmarks: async (_, __, {req}) => {
+            const userId = new Object(req.userId);
+            const maps = await Region.find({userID: userId, parentRegion: null});
+            let landmarkList = [];
+            for (let i = 0; i < maps.length; i++) {
+                let landmarks = await findLandmarks(maps[i]);
+                landmarkList.push(...landmarks);
+            }
+            console.log("yea");
+            return landmarkList;
+
         }
     },
     Mutation: {

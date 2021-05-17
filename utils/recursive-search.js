@@ -66,5 +66,21 @@ const regionPathHelper = async (rootRegion, path) => {
         await regionPathHelper(region.parentRegion, path);
     }
 }
-
-module.exports = {searchIds, findOtherSubregions, regionPath};
+const findLandmarks = async (rootObject) => {
+    let landmarkList = [];
+    await findLandmarksHelper(rootObject, landmarkList);
+    return landmarkList;
+} 
+const findLandmarksHelper = async (rootObject, landmarkList) => {
+    if (rootObject.landmarks) {
+        landmarkList.push(...rootObject.landmarks);
+    }
+    const subregions = rootObject.subregions;
+    for (let i = 0; i < subregions.length; i++) {
+        const objectId = new ObjectId(subregions[i]);
+        const region = await Region.findOne({_id: objectId});
+        console.log(region);
+        await findLandmarksHelper(region, landmarkList);
+    }
+}
+module.exports = {searchIds, findOtherSubregions, regionPath, findLandmarks};

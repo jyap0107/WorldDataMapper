@@ -134,3 +134,8 @@ export const GET_REGION_PATH = gql`
 		}
 	}
 `;
+export const GET_ALL_LANDMARKS = gql`
+	query GetAllLandmarks {
+		getAllLandmarks
+	}
+`;

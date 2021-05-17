@@ -93,7 +93,7 @@ const Maps = (props) => {
                             }
                         </WCContent>
                         <WCContent className="maps-side">
-                            <div className="map-image"><img src={globe} className="globe" alt="logo"/></div>
+                            <div className="map-image"><img src={globe} className="globe"/></div>
                             <WCFooter className="map-creation">
                                 <WButton className="map-button" color="custom-color" size="medium" className = "map-create" onClick = {createNewMap} clickAnimation="ripple-light" hoverAnimation="darken">Add Map</WButton>
                                 <div className="map-input-wrapper">

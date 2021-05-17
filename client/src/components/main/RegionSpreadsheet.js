@@ -30,19 +30,56 @@ const RegionSpreadsheet = (props) => {
     const [leaderAsc, setLeaderAsc] = useState(false);
     const [showDelete, setShowDelete] = useState(false);
     const [subregionToDelete, setSubregionToDelete] = useState({});
+    const [isActive, setIsActive] = useState(false);
+    const [activeRow, setActiveRow] = useState(-1);
+    const [activeCol, setActiveCol] = useState(-1);
 
 
-    const [getSubregions, {loading, data, refetch}] = useLazyQuery(GET_SUBREGIONS_BY_ID);
+    const [getSubregions, {loading, data, refetch}] = useLazyQuery(GET_SUBREGIONS_BY_ID, {fetchPolicy: 'cache-and-network'});
     const regionData = useQuery(GET_REGION, {variables: {regionId: currentRegion}});
     // const {loading, data, refetch} = useQuery(GET_SUBREGIONS_BY_ID, {variables: {regionId: currentRegion}}, {fetchPolicy: 'cache-and-network'});
-    
-
 
     useEffect(() => {
             getSubregions({variables: {regionId: currentRegion}}, {fetchPolicy: 'cache-and-network'});
             props.setCurrentRegion(currentRegion);
             props.tps.clearAllTransactions();
         }, [getSubregions, currentRegion, props.setCurrentRegion])
+
+    useEffect(() => {
+        document.addEventListener("keydown", handleKeyPress);
+        return () => document.removeEventListener("keydown", handleKeyPress);
+    })
+
+    const undo = async () => {
+        await props.tps.undoTransaction();
+        setRedo(true);
+        if (props.tps.hasTransactionToUndo()) {
+            setUndo(true);
+        }
+        else {
+            setUndo(false);
+        }
+        await refetch();
+    }
+    const redo = async () => {
+        await props.tps.doTransaction();
+        setUndo(true);
+        if (props.tps.hasTransactionToRedo()) {
+            setRedo(true);
+        }
+        else {
+            setRedo(false);
+        }
+        await refetch();
+    }
+    const handleKeyPress = async (event) => {
+        if (event.ctrlKey && event.key == "z") {
+            await undo();
+          }
+          if (event.ctrlKey && event.key == "y") {
+            await redo();
+          }
+    }
     
     const regionViewer = `/${currentRegion}/view`
     if (data && regionData && regionData.data) {
@@ -58,7 +95,6 @@ const RegionSpreadsheet = (props) => {
 
             const length = subregions ? subregions.length : 0;
             const index = length > 0 ? subregions[length - 1].index + 1 : 0;
-            console.log(index);
             let map = {
                 _id: "",
                 userID: props.user._id,
@@ -77,8 +113,8 @@ const RegionSpreadsheet = (props) => {
             await redo();
         }
         
-        const deleteSubregion = async (_id, index) => {
-            let transaction = new DeleteSubregion_Transaction(_id, index, DeleteSubregion, AddMultipleRegions);
+        const deleteSubregion = async () => {
+            let transaction = new DeleteSubregion_Transaction(subregionToDelete._id, subregionToDelete.index, DeleteSubregion, AddMultipleRegions);
             props.tps.addTransaction(transaction);
             await redo();
             await refetch();
@@ -116,29 +152,8 @@ const RegionSpreadsheet = (props) => {
             setShowDelete(!showDelete);
             console.log(showDelete);
         }
-        const undo = async () => {
-            await props.tps.undoTransaction();
-            setRedo(true);
-            if (props.tps.hasTransactionToUndo()) {
-                setUndo(true);
-            }
-            else {
-                setUndo(false);
-            }
-            await refetch();
-        }
-        const redo = async () => {
-            await props.tps.doTransaction();
-            setUndo(true);
-            if (props.tps.hasTransactionToRedo()) {
-                setRedo(true);
-            }
-            else {
-                setRedo(false);
-            }
-            await refetch();
-        }
-        console.log(subregions);
+        
+        
         return(
             <div>
                 <WCard className="region-spreadsheet-container">
@@ -184,7 +199,7 @@ const RegionSpreadsheet = (props) => {
                                     </WRow>
                                 </WLHeader>
                                 <WCContent className="spreadsheet-content-container">
-                                    { subregions.map((subregion) => <SubregionEntry 
+                                    { subregions.map((subregion, index) => <SubregionEntry 
                                     subregion={subregion} refetch={refetch}
                                     handleSetCurrentRegion={props.handleSetCurrentRegion}
                                     deleteSubregion={deleteSubregion}
@@ -194,6 +209,13 @@ const RegionSpreadsheet = (props) => {
                                     setShowDelete={setShowDelete}
                                     handleShowDelete={handleShowDelete}
                                     setSubregionToDelete={setSubregionToDelete}
+                                    setActiveRow={setActiveRow}
+                                    setActiveCol={setActiveCol}
+                                    setIsActive={setIsActive}
+                                    index={index}
+                                    activeRow={activeRow}
+                                    activeCol={activeCol}
+                                    maxRow={regionData.data.getRegion.subregions.length-1}
                                     />)}
                                 </WCContent>
                             </WLayout>
@@ -201,7 +223,7 @@ const RegionSpreadsheet = (props) => {
                     </WLayout>
                 </WCard>
                 {
-                    showDelete && (<DeleteSubregionModal showDelete={showDelete} setShowDelete={setShowDelete} deleteSubregion={deleteSubregion}/>)
+                    showDelete && (<DeleteSubregionModal showDelete={showDelete} handleShowDelete={setShowDelete} deleteSubregion={deleteSubregion}/>)
                 }
             </div>
             
