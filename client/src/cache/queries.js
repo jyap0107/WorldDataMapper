@@ -114,13 +114,13 @@ export const GET_POSSIBLE_PARENTS = gql`
 	}
 `;
 export const GET_SIBLING_REGIONS = gql`
-	query GetSiblingRegions($region_id: String!) {
-		getSiblingRegions(region_id: $region_id)
+	query GetSiblingRegions($region_id: String!, $parent_id: String) {
+		getSiblingRegions(region_id: $region_id, parent_id: $parent_id)
 	}
 `;
 export const GET_REGION_PATH = gql`
-	query GetRegionPath($region_id: String) {
-		getRegionPath(region_id: $region_id) {
+	query GetRegionPath($region_id: String, $parent_id: String) {
+		getRegionPath(region_id: $region_id, parent_id: $parent_id) {
 			_id
 			userID
 			name

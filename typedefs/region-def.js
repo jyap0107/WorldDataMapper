@@ -21,8 +21,8 @@ const typeDefs = gql `
         getParent(region_id: String!): Region
         getLandmarks(region_id: String!): [String]!
         getPossibleParents(region_id: String!): [Region]
-        getSiblingRegions(region_id: String!): [String]
-        getRegionPath(region_id: String): [Region]
+        getSiblingRegions(region_id: String!, parent_id: String): [String]
+        getRegionPath(region_id: String, parent_id: String): [Region]
         getAllLandmarks: [String]
 	}
 	extend type Mutation {

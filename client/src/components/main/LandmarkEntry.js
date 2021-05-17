@@ -30,8 +30,9 @@ const LandmarkEntry = (props) => {
         toggleEditing(true);
     }
     const handleDelete = async () => {
-        await props.removeLandmark(props.currentRegion, props.landmark);
-        await props.refetchLandmarks();
+        props.setDeleteId(props.currentRegion);
+        props.setDeleteValue(props.landmark);
+        props.handleShowDelete();
     }
     const isLocal = props.localLandmarks.includes(props.landmark);
     // }

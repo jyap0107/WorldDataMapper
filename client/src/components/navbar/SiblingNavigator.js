@@ -5,18 +5,15 @@ import { GET_SIBLING_REGIONS }             from '../../cache/queries';
 
 const SiblingNavigator = (props) => {
 
-    const { data, error  } = useQuery(GET_SIBLING_REGIONS, {variables: {region_id: props.currentRegion}}, {fetchPolicy: 'network-only'})
+    const { data, error  } = useQuery(GET_SIBLING_REGIONS, {variables: {region_id: props.currentRegion, parent_id: props.currentParent}}, {fetchPolicy: 'network-only'})
     const history = useHistory();
 
     const [rerender, setRerender] = useState(false);
 
     if (data) {
 
-        console.log("Rerender?");
-
         const siblings = data.getSiblingRegions;
         const indexOfRegion = siblings.indexOf(props.currentRegion);
-        console.log(props.currentRegion);
         const leftClickRegion = indexOfRegion == 0 ? "" : siblings[indexOfRegion - 1];
         const rightClickRegion = indexOfRegion == siblings.length-1 ? "" : siblings[indexOfRegion + 1];
 

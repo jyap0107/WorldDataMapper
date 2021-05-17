@@ -40,7 +40,7 @@ const RegionSpreadsheet = (props) => {
     // const {loading, data, refetch} = useQuery(GET_SUBREGIONS_BY_ID, {variables: {regionId: currentRegion}}, {fetchPolicy: 'cache-and-network'});
 
     useEffect(() => {
-            getSubregions({variables: {regionId: currentRegion}}, {fetchPolicy: 'cache-and-network'});
+            getSubregions({variables: {regionId: currentRegion}}, {fetchPolicy: 'network-only'});
             props.setCurrentRegion(currentRegion);
             props.tps.clearAllTransactions();
             props.setIsViewer(false);

@@ -25,6 +25,7 @@ const Homescreen = (props) => {
 	const [currentRegion, setCurrentRegion] = useState("");
 	const [regionItem, setRegionitem] = useState(null);
 	const [isViewer, setIsViewer] = useState(false);
+	const [currentParent, setCurrentParent] = useState("");
 
 	//#region Hooks
 	const [activeList, setActiveList] 		= useState({});
@@ -218,15 +219,18 @@ const Homescreen = (props) => {
 							<Logo user={props.user} setCurrentRegion={setCurrentRegion} />
 						</WNavItem>
 					</ul>
+					{auth ?
 					<ul>
 						<WNavItem>
-							<Breadcrumbs user={props.user} currentRegion={currentRegion} handleSetCurrentRegion={handleSetCurrentRegion}/>
+							<Breadcrumbs user={props.user} currentRegion={currentRegion} handleSetCurrentRegion={handleSetCurrentRegion}
+							currentParent={currentParent}/>
 						</WNavItem>
-					</ul>
-					{isViewer ? 
+					</ul> : <></>}
+					{isViewer && auth ? 
 					<ul>
 						<WNavItem>
-							<SiblingNavigator user={props.user} currentRegion={currentRegion} setCurrentRegion={setCurrentRegion}/>
+							<SiblingNavigator user={props.user} currentRegion={currentRegion} setCurrentRegion={setCurrentRegion}
+							currentParent={currentParent}/>
 						</WNavItem>
 					</ul> :
 					<></>
@@ -296,6 +300,7 @@ const Homescreen = (props) => {
 							tps={props.tps}
 							setCurrentRegion={setCurrentRegion}
 							setIsViewer={setIsViewer}
+							setCurrentParent={setCurrentParent}
 							/>}
 						/>}
 						<Route exact path="/"> {auth ? <Redirect to="/maps"></Redirect> : <Redirect to="/welcome"></Redirect>}</Route>

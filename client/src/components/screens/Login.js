@@ -1,6 +1,6 @@
 import React, { useState } 	from 'react';
 import { LOGIN } 			from '../../cache/mutations';
-import { useMutation }    	from '@apollo/client';
+import { useMutation, useApolloClient }    	from '@apollo/client';
 import { Link, useHistory } from 'react-router-dom';
 
 import { WGrid, WCol, WLHeader, WLFooter, WLMain, WCard, WModal, WMHeader, WMMain, WMFooter, WButton, WInput, WLayout } from 'wt-frontend';
@@ -8,11 +8,14 @@ import WLSide from 'wt-frontend/build/components/wlayout/WLSide';
 
 const Login = (props) => {
 	let history = useHistory();
+
 	const [input, setInput] = useState({ email: '', password: '' });
 	const [loading, toggleLoading] = useState(false);
 	const [showErr, displayErrorMsg] = useState(false);
 	const errorMsg = "Email/Password not found.";
 	const [Login] = useMutation(LOGIN);
+
+    const client = useApolloClient();
 
 	const updateInput = (e) => {
 		const { name, value } = e.target;

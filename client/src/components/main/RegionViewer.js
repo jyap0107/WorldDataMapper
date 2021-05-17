@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { useMutation, useQuery, useLazyQuery } from '@apollo/client';
 import LandmarkEntry from './LandmarkEntry';
-import DeleteMap						from '../modals/DeleteMap.js';
+import DeleteLandmarkModal						from '../modals/DeleteLandmarkModal';
 import * as mutations 					from '../../cache/mutations';
 import { GET_REGION, GET_SUBREGIONS_BY_ID, GET_LANDMARKS, GET_POSSIBLE_PARENTS, GET_PARENT, GET_REGION_PATH, GET_ALL_LANDMARKS }                   from '../../cache/queries';
 import { WLHeader, WCContent, WLFooter, WLMain, WCard, WModal, WMHeader, WMMain, WMFooter, WButton, WInput, WLayout } from 'wt-frontend';
@@ -11,13 +11,14 @@ import { AddLandmark_Transaction, DeleteLandmark_Transaction, EditLandmark_Trans
 
 const RegionViewer = (props) => {
 
+
     const { currentRegion } = useParams();
     const { data: regionData, refetch } = useQuery( GET_REGION, {variables: {regionId: currentRegion}}, {fetchPolicy: "network-only"});
     const { data: subregions } = useQuery(GET_SUBREGIONS_BY_ID, {variables: {regionId: currentRegion}}, {fetchPolicy: "network-only"})
     const { data: landmarksData, refetch: refetchLandmarks} = useQuery(GET_LANDMARKS, {variables: {region_id: currentRegion}, fetchPolicy: 'network-only'});
     const { data: possibleParentsData, refetch: refetchParents} = useQuery(GET_POSSIBLE_PARENTS, {variables: {region_id: currentRegion}, fetchPolicy: "network-only"});
     const { data: parentData, refetch: refetchParent } = useQuery( GET_PARENT, {variables: {region_id: currentRegion}}, {fetchPolicy: "cache-and-network"});
-    const { data: regionPathData } = useQuery(GET_REGION_PATH, {variables: {region_id: currentRegion}}, {fetchPolicy: "network-only"})
+    const { data: regionPathData } = useQuery(GET_REGION_PATH, {variables: {region_id: currentRegion}})
     const { data: allLandmarksData, error } = useQuery(GET_ALL_LANDMARKS, {fetchPolicy: 'cache-and-network'});
 
     const [input, setInput] = useState("");
@@ -26,6 +27,9 @@ const RegionViewer = (props) => {
     const [canRedo, setRedo] = useState(false);
     const [editingParent, setEditingParent] = useState(false);
     const [parentName, setParentName] = useState("");
+    const [showDelete, setShowDelete] = useState(false);
+    const [deleteId, setDeleteId] = useState("");
+    const [deleteValue, setDeleteValue] = useState(-1);
 
     const [transactionsLeft, setTransactionsLeft] = useState(0);
     
@@ -136,10 +140,10 @@ const RegionViewer = (props) => {
             props.tps.addTransaction(transaction);
             await redo();
         }
-        const removeLandmark = async (region_id, value) => {
-            let index = localLandmarks.indexOf(value);
+        const removeLandmark = async () => {
+            let index = localLandmarks.indexOf(deleteValue);
             console.log(index);
-            const transaction = new DeleteLandmark_Transaction(currentRegion, value, index, DeleteLandmark, AddLandmark);
+            const transaction = new DeleteLandmark_Transaction(currentRegion, deleteValue, index, DeleteLandmark, AddLandmark);
             props.tps.addTransaction(transaction);
             await redo();
         }
@@ -151,8 +155,13 @@ const RegionViewer = (props) => {
             props.tps.addTransaction(transaction);
             await redo();
             setEditingParent(false);
+            props.setCurrentParent(parent._id)
+
             await refetchParent();
-            
+        }
+        const handleShowDelete = () => {
+            setShowDelete(!showDelete);
+            console.log(showDelete);
         }
         
         const names = possibleParents.map((entry) => entry._id);
@@ -212,6 +221,9 @@ const RegionViewer = (props) => {
                                             currentRegion={currentRegion}
                                             editLandmarkName={editLandmarkName}
                                             removeLandmark={removeLandmark}
+                                            setDeleteId={setDeleteId}
+                                            setDeleteValue={setDeleteValue}
+                                            handleShowDelete={handleShowDelete}
                                         />
                                     ))
                                 }
@@ -225,7 +237,9 @@ const RegionViewer = (props) => {
                         </WCContent>
                     </WLayout>
                 </WCard>
-                
+                {
+                    showDelete && (<DeleteLandmarkModal showDelete={showDelete} setShowDelete={setShowDelete} handleShowDelete={setShowDelete} removeLandmark={removeLandmark}/>)
+                }
             </div>
             
             

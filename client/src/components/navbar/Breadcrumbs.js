@@ -1,13 +1,14 @@
-import React from 'react';
+import React, { useState, useEffect } from 'react';
 import { Link } from 'react-router-dom';
-import { useMutation, useQuery } 		from '@apollo/client';
+import { useMutation, useQuery, useLazyQuery } from '@apollo/client';
 import { GET_REGION_PATH }						from '../../cache/queries';
 
 const Breadcrumbs = (props) => {
-    const {data} = useQuery(GET_REGION_PATH, {variables: {region_id: props.currentRegion}})
+    console.log("getting path from breadcrumbs");
+    const {data} = useQuery(GET_REGION_PATH, {variables: {region_id: props.currentRegion, parent_id: props.currentParent}}, {fetchPolicy: 'network'})
 
     
-    if (data) {
+    if (data ) {
         const path = data.getRegionPath;
         return (
             <div className='breadcrumbs'>

@@ -40,8 +40,8 @@ const CreateAccount = (props) => {
 				history.push("/createAccount")
 			}
 			else {
-				history.push("/maps");
-				props.fetchUser();
+				alert('Account creation successful!');
+				history.push("/welcome");
 				//changed from lastName and firstName to just name
 			}
 

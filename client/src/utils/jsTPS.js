@@ -13,16 +13,21 @@ export class AddSubregion_Transaction extends jsTPS_Transaction {
         this.isMap = isMap
     }
     async doTransaction() {
+        if (this.prevRegionId) {
+            this.region._id = this.prevRegionId;
+        }
 
         const { data } = await this.doFunction({variables: { region: this.region, index: this.index, isMap: this.isMap }})
         if (data) {
             console.log(data.addRegion);
             this.prevRegionId = data.addRegion;
         }
+        this.region._id = this.prevRegionId;
     }
     async undoTransaction() {
         console.log("yes");
         const { data } = await this.undoFunction({variables: { region_id: this.prevRegionId, isMap: this.isMap }})
+        console.log(this.prevRegionId);
     }
 }
 export class DeleteSubregion_Transaction extends jsTPS_Transaction {
@@ -34,14 +39,14 @@ export class DeleteSubregion_Transaction extends jsTPS_Transaction {
         this.undoFunction = undoFunction;
     }
     async doTransaction() {
-        console.log(this._id);
         const { data } = await this.doFunction({variables: {region_id: this._id, isMap: false}});
         this.deletedRegions = data.deleteRegion;
         this.deletedRegions = this.deletedRegions.map(({__typename, ...item}) => item);
-        console.log(this.deletedRegions);
+        console.log(this.deletedRegions[0]._id);
     }
     async undoTransaction() {
         const { data } = await this.undoFunction({variables: {parentRegion: this._id, regions: this.deletedRegions, index: this.index}})
+        console.log(this.deletedRegions[0]._id);
     }
 }
 export class EditSubregionField_Transaction extends jsTPS_Transaction {
@@ -55,9 +60,17 @@ export class EditSubregionField_Transaction extends jsTPS_Transaction {
     }
     async doTransaction() {
         const { data } = await this.doFunction({variables: { region_id: this._id, field: this.field, value: this.newVal}});
+        console.log("Prev, New, ID, for do/redo")
+        console.log(this.prevVal);
+        console.log(this.newVal);
+        console.log(this._id);
     }
     async undoTransaction() {
         const { data } = await this.doFunction({variables: { region_id: this._id, field: this.field, value: this.prevVal}});
+        console.log("Prev, New, ID, for undo")
+        console.log(this.prevVal);
+        console.log(this.newVal);
+        console.log(this._id);
     }
 }
 export class SortCol_Transaction extends jsTPS_Transaction {
@@ -346,9 +359,9 @@ export class jsTPS {
 			this.performingDo = false;
             
         }
-        console.log('transactions: ' + this.getSize());
-        console.log('redo transactions:' + this.getRedoSize());
-        console.log('undo transactions:' + this.getUndoSize());
+        // console.log('transactions: ' + this.getSize());
+        // console.log('redo transactions:' + this.getRedoSize());
+        // console.log('undo transactions:' + this.getUndoSize());
 		console.log(' ')
 		return retVal;
     }

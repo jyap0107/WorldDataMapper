@@ -67,7 +67,7 @@ module.exports = {
             return possibleParents;
         },
         getSiblingRegions: async  (_, args) => {
-            const {region_id} = args;
+            const {region_id, parent_id} = args;
             const objectId = new ObjectId(region_id);
             const region = await Region.findOne({_id: objectId});
             const parent = await Region.findOne({_id: region.parentRegion});
@@ -75,7 +75,7 @@ module.exports = {
             return parent.subregions;
         },
         getRegionPath: async (_, args) => {
-            const {region_id} = args;
+            const {region_id, parent_id} = args;
             const objectId = new ObjectId(region_id);
             const region = await Region.findOne({_id: objectId});
             if (region.parentRegion == null) {
@@ -105,9 +105,18 @@ module.exports = {
             const objectId = new ObjectId();
             const { _id, userID, name, parentRegion, capital, leader, numSubregions, landmarks, index, subregions } = region;
             // console.log(subregions);
+            console.log(_id);
+            let region_id;
+            if (_id) {
+                const objectId2 = new ObjectId(_id);
+                region_id = objectId2;
+            }
+            else {
+                region_id = objectId;
+            }
             if (isMap) {
                 const newMap = new Region({
-                    _id: objectId,
+                    _id: region_id,
                     userID: userID,
                     name: name,
                     parentRegion: parentRegion,
@@ -125,7 +134,7 @@ module.exports = {
             }
             else {
                 const newSubregion = new Region({
-                    _id: objectId,
+                    _id: region_id,
                     userID: userID,
                     name: name,
                     parentRegion: parentRegion,
@@ -317,12 +326,14 @@ module.exports = {
             const {region_id, newParent} = args;
             const objectId = new ObjectId(region_id);
             // Set region_id's parent to newParent
-            const updated = await Region.updateOne({_id: objectId}, { "$set" : {parentRegion: newParent}});
             const region = await Region.findOne({_id: objectId});
-            // Using region, get it,  then get its parentRegion, turn into objectId, find update it.
             const parent = region.parentRegion;
+            const updated = await Region.updateOne({_id: objectId}, { "$set" : {parentRegion: newParent}});
+            
+            // Using region, get it,  then get its parentRegion, turn into objectId, find update it.
             const parentId = new ObjectId(parent);
             // Pull region_id as a subregion from its parent.
+            console.log(parentId)
             const updated2 = await Region.updateOne({_id: parentId}, {$pull: { subregions: region_id}});
             // Lastly, find the newParent and add to its list of subregions
             const parentObjId = new ObjectId(newParent);
