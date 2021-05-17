@@ -88,6 +88,7 @@ export class DeleteLandmark_Transaction extends jsTPS_Transaction {
     }
     async doTransaction() {
         const { data } = await this.doFunction({variables: { region_id: this._id, value: this.landmark}})
+        console.log("doing")
     }
     async undoTransaction() {
         const { data } = await this.undoFunction({variables: {region_id: this._id, landmark: this.landmark, index: this.index}})
@@ -103,6 +104,7 @@ export class AddLandmark_Transaction extends jsTPS_Transaction {
     }
     async doTransaction() {
         const { data } = await this.doFunction({variables: { region_id: this._id, landmark: this.landmark, index: this.index}})
+        console.log("doing");
     }
     async undoTransaction() {
         const { data } = await this.undoFunction({variables: {region_id: this._id, value: this.landmark}})

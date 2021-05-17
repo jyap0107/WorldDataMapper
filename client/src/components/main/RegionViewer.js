@@ -13,11 +13,11 @@ const RegionViewer = (props) => {
 
     const { currentRegion } = useParams();
     const { data: regionData, refetch } = useQuery( GET_REGION, {variables: {regionId: currentRegion}}, {fetchPolicy: "network-only"});
-    const { data: subregions } = useQuery(GET_SUBREGIONS_BY_ID, {variables: {regionId: currentRegion}})
+    const { data: subregions } = useQuery(GET_SUBREGIONS_BY_ID, {variables: {regionId: currentRegion}}, {fetchPolicy: "network-only"})
     const { data: landmarksData, refetch: refetchLandmarks} = useQuery(GET_LANDMARKS, {variables: {region_id: currentRegion}, fetchPolicy: 'network-only'});
-    const { data: possibleParentsData, refetch: refetchParents} = useQuery(GET_POSSIBLE_PARENTS, {variables: {region_id: currentRegion}});
+    const { data: possibleParentsData, refetch: refetchParents} = useQuery(GET_POSSIBLE_PARENTS, {variables: {region_id: currentRegion}, fetchPolicy: "network-only"});
     const { data: parentData, refetch: refetchParent } = useQuery( GET_PARENT, {variables: {region_id: currentRegion}}, {fetchPolicy: "cache-and-network"});
-    const { data: regionPathData } = useQuery(GET_REGION_PATH, {variables: {region_id: currentRegion}})
+    const { data: regionPathData } = useQuery(GET_REGION_PATH, {variables: {region_id: currentRegion}}, {fetchPolicy: "network-only"})
     const { data: allLandmarksData, error } = useQuery(GET_ALL_LANDMARKS, {fetchPolicy: 'cache-and-network'});
 
     const [input, setInput] = useState("");
@@ -26,20 +26,27 @@ const RegionViewer = (props) => {
     const [canRedo, setRedo] = useState(false);
     const [editingParent, setEditingParent] = useState(false);
     const [parentName, setParentName] = useState("");
+
+    const [transactionsLeft, setTransactionsLeft] = useState(0);
     
     const [editLandmark] = useMutation(mutations.EDIT_LANDMARK);
-    const [deleteLandmark] = useMutation(mutations.DELETE_LANDMARK);
-    const [addLandmark] = useMutation(mutations.ADD_LANDMARK)
+    const [DeleteLandmark] = useMutation(mutations.DELETE_LANDMARK);
+    const [AddLandmark] = useMutation(mutations.ADD_LANDMARK)
     const [changeParentRegion] = useMutation(mutations.CHANGE_PARENT_REGION);
 
     useEffect(() => {
         props.setCurrentRegion(currentRegion);
         props.setIsViewer(true);
-        props.tps.clearAllTransactions()})
-    useEffect(() => {
-        return () => {
-            props.setIsViewer(false);
+        // props.tps.clearAllTransactions()
+        console.log(transactionsLeft);
+        if (transactionsLeft == 0) {
+            props.tps.clearAllTransactions();
         }
+    }, [transactionsLeft, props.tps.clearAllTransactions])
+    useEffect(() => {
+        // return () => {
+        //     props.setIsViewer(false);
+        // }
     })
     useEffect(() => {
         document.addEventListener("keydown", handleKeyPress);
@@ -59,9 +66,7 @@ const RegionViewer = (props) => {
         await refetchParent();
     }
     const redo = async () => {
-        console.log(props.tps.getRedoSize());
         await props.tps.doTransaction();
-        console.log(props.tps.getRedoSize());
         setUndo(true);
         if (props.tps.hasTransactionToRedo()) {
             setRedo(true);
@@ -69,6 +74,7 @@ const RegionViewer = (props) => {
         else {
             setRedo(false);
         }
+        setTransactionsLeft(props.tps.transactions.length);
         await refetchLandmarks();
         await refetch();
         await refetchParent();
@@ -115,11 +121,9 @@ const RegionViewer = (props) => {
                 alert("You may not include duplicate landmarks. Please enter another landmark.")
             }
             else {
-                const transaction = new AddLandmark_Transaction(currentRegion, input, addLandmark, deleteLandmark);
-                console.log(props.tps.getSize());
+                const transaction = new AddLandmark_Transaction(currentRegion, input, AddLandmark, DeleteLandmark);
                 props.tps.addTransaction(transaction);
-                console.log(props.tps.getSize());
-                await props.tps.doTransaction
+                await redo();
             }
             target.value = "";
             setInput("");
@@ -135,7 +139,7 @@ const RegionViewer = (props) => {
         const removeLandmark = async (region_id, value) => {
             let index = localLandmarks.indexOf(value);
             console.log(index);
-            const transaction = new DeleteLandmark_Transaction(currentRegion, value, index, deleteLandmark, addLandmark);
+            const transaction = new DeleteLandmark_Transaction(currentRegion, value, index, DeleteLandmark, AddLandmark);
             props.tps.addTransaction(transaction);
             await redo();
         }

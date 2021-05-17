@@ -43,6 +43,7 @@ const RegionSpreadsheet = (props) => {
             getSubregions({variables: {regionId: currentRegion}}, {fetchPolicy: 'cache-and-network'});
             props.setCurrentRegion(currentRegion);
             props.tps.clearAllTransactions();
+            props.setIsViewer(false);
         }, [getSubregions, currentRegion, props.setCurrentRegion])
 
     useEffect(() => {

@@ -270,7 +270,9 @@ const Homescreen = (props) => {
 								setShowDeleteModal={setShowDeleteModal}
 								setCurrentRegion={setCurrentRegion}
 								handleSetCurrentRegion={handleSetCurrentRegion}
-								key={props.user}/>
+								key={props.user}
+								setIsViewer={setIsViewer}/>
+								
 								}
 							/>}
 						{auth && <Route path="/:currentRegion/subregions" render= {
@@ -283,6 +285,7 @@ const Homescreen = (props) => {
 							handleSetCurrentRegion={handleSetCurrentRegion}
 							key={currentRegion}
 							tps={props.tps}
+							setIsViewer={setIsViewer}
 							/>}
 						/>}
 						{auth && <Route path="/:currentRegion/view" render= {() => <RegionViewer

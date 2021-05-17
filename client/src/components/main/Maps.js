@@ -20,7 +20,9 @@ const Maps = (props) => {
     const [DeleteMapMutation] = useMutation(mutations.DELETE_REGION);
     const [EditRegionField] = useMutation(mutations.EDIT_REGION_FIELD);
 
-    useEffect(() => props.setCurrentRegion(""))
+    useEffect(() => {
+    props.setCurrentRegion("")
+    props.setIsViewer(false)})
 
     const updateInput = async (event) => {
         const value = event.target.value;
